@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import swing.ThongBao;
 import view.viewBanHang;
+import view.viewQLKhuyenMai;
 import view.viewQLNhanVien;
 import view.viewThongKe;
 
@@ -844,7 +845,8 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnQLDKMMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQLDKMMousePressed
         // TODO add your handling code here:
-
+        this.pnlRight.removeAll();
+        this.pnlRight.add(new viewQLKhuyenMai());
         setColor(btnQLDKM);
         resetColor(btnQLSP);
         resetColor(btnQLNV);

@@ -132,6 +132,13 @@
             <artifactId>jboss-logging</artifactId>
             <version>3.5.0.Final</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <name>PRO1041_IT18016_Nhom1</name>
 </project>
