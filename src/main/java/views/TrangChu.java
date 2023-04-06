@@ -14,7 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import swing.ThongBao;
+import view.QuanLyKhachHang;
+import view.ViewQLKH;
 import view.viewBanHang;
+import view.viewQLKhachHang;
 import view.viewQLKhuyenMai;
 import view.viewQLNhanVien;
 import view.viewThongKe;
@@ -39,7 +42,7 @@ public class TrangChu extends javax.swing.JFrame {
         lblTitle.setText("Phần mềm bán bia đóng sẵn");
         cardLayout = (CardLayout) pnlRight.getLayout();
         String hoTen = viewLogin.nv.getHoTen();
-        this.lblTenNhanVien.setText("Xin chào : "+hoTen.substring(hoTen.lastIndexOf(" ")));
+        //this.lblTenNhanVien.setText("Xin chào : "+hoTen.substring(hoTen.lastIndexOf(" ")));
         nhanVien = nv;
         //btnBanHangMousePressed(evt);
 
@@ -822,7 +825,8 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnQLKHMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQLKHMousePressed
         // TODO add your handling code here:
-
+        pnlRight.removeAll();
+        pnlRight.add(new viewQLKhachHang());
         setColor(btnQLKH);
         resetColor(btnQLDKM);
         resetColor(btnQLNV);
@@ -836,9 +840,6 @@ public class TrangChu extends javax.swing.JFrame {
         ind_fonts.setOpaque(false);
         ind_icons.setOpaque(true);
         ind_data1.setOpaque(false);
-
-        cardLayout.show(pnlRight, "card2");
-        cardLayout.next(pnlRight);
 
 
     }//GEN-LAST:event_btnQLKHMousePressed

@@ -16,4 +16,6 @@ public interface ServiceKhachHang<T> {
     Boolean update(String ma , T object);
     KhachHang getBySDT(String sdt);
     List<T> getAll();
+    void writeExcel(List<T> list,String[] nameColumn,String nameSheet,String nameFile);
+    List<T> importExcel();
 }

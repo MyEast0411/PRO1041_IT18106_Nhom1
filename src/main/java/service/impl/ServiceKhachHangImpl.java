@@ -9,6 +9,7 @@ import domainModel.KhachHang;
 import java.util.List;
 import repositories.KhachHangRepository;
 import service.ServiceKhachHang;
+import utilities.Ex_Im_ExcelKH;
 import viewmodel.HoaDonViewModel;
 import viewmodel.SPHDViewModel;
 
@@ -18,7 +19,13 @@ import viewmodel.SPHDViewModel;
  */
 public class ServiceKhachHangImpl implements ServiceKhachHang<KhachHang>{
 private KhachHangRepository hangRepository = new KhachHangRepository();
+private Ex_Im_ExcelKH eekh;
 
+    public ServiceKhachHangImpl() {
+        hangRepository = new KhachHangRepository();
+        eekh = new Ex_Im_ExcelKH();
+    }
+    
     @Override
     public Boolean save(KhachHang object) {
        return hangRepository.insert(object);
@@ -44,6 +51,15 @@ private KhachHangRepository hangRepository = new KhachHangRepository();
         return hangRepository.renderMa();
     }
     
+    @Override
+    public void writeExcel(List<KhachHang> list, String[] nameColumn,String nameSheet,String nameFile) {
+       eekh.export(list, nameColumn,nameSheet,nameFile);
+    }
+
+    @Override
+    public List<KhachHang> importExcel() {
+       return eekh.importExcel();
+    }
     public List<HoaDonViewModel> getHDByMaKH(String ma){
         return hangRepository.getHDByMaKh(ma);
     }

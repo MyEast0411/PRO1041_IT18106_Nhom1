@@ -23,6 +23,7 @@ import viewmodel.SPHDViewModel;
  * @author SoiDiCode
  */
 public class KhachHangRepository {
+
     public Boolean insert(KhachHang kh) {
         try ( Session ss = HibernateUtil.getSession();) {
             ss.getTransaction().begin();
@@ -56,8 +57,6 @@ public class KhachHangRepository {
                 + "gioiTinh = : gioiTinh "
                 + "where ma = :ma";
         try ( Session ss = HibernateUtil.getSession();) {
-           
-
 
             ss.getTransaction().begin();
             Query query = ss.createQuery(hql);
@@ -65,12 +64,12 @@ public class KhachHangRepository {
             query.setParameter("diaChi", kh.getDiaChi());
             query.setParameter("gioiTinh", kh.getGioiTinh());
             query.setParameter("ma", ma);
-            
+
             int result = query.executeUpdate();
 
             ss.getTransaction().commit();
 
-            return result >0 ;
+            return result > 0;
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -84,8 +83,8 @@ public class KhachHangRepository {
                 + "where ma = :ma";
         try ( Session ss = HibernateUtil.getSession();) {
             ss.getTransaction().begin();
-           Query query = ss.createQuery(hql).setParameter("ma", ma);
-           int kq = query.executeUpdate();
+            Query query = ss.createQuery(hql).setParameter("ma", ma);
+            int kq = query.executeUpdate();
             ss.getTransaction().commit();
             return kq > 0;
         } catch (Exception e) {
@@ -111,24 +110,27 @@ public class KhachHangRepository {
         List<KhachHang> List = query.getResultList();
         return List.isEmpty() ? new ArrayList<>() : List;
     }
-     public String renderMa(){
+
+    public String renderMa() {
         Date date = new Date();
-         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-         String time = sdf.format(date);
-        return "KH"+date.getHours()+date.getMinutes()+date.getSeconds()+time;
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
+        String time = sdf.format(date);
+        return "KH" + date.getHours() + date.getMinutes() + date.getSeconds() + time;
     }
-     public KhachHang searchBySDT(String sdt){
-         try {
-             Session ss = HibernateUtil.getSession();
-             TypedQuery<KhachHang> query = ss.createQuery("FROM KhachHang kh where kh.sdt like :sdt");
-             query.setParameter("sdt", sdt);
-             return query.getSingleResult();
-         } catch (Exception e) {
-             return null;
-         }
-        
-     }
-	 public List<HoaDonViewModel> getHDByMaKh(String ma){
+
+    public KhachHang searchBySDT(String sdt) {
+        try {
+            Session ss = HibernateUtil.getSession();
+            TypedQuery<KhachHang> query = ss.createQuery("FROM KhachHang kh where kh.sdt like :sdt");
+            query.setParameter("sdt", sdt);
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    public List<HoaDonViewModel> getHDByMaKh(String ma) {
 //              maHD,
 //                maNV,
 //                hoTen,
@@ -136,41 +138,42 @@ public class KhachHangRepository {
 //               hinhThucThanhToan,
 //                tongTien,
 //                tienMat
-	  String hql = "Select new viewmodel.HoaDonViewModel( hd.ma , hd.nhanVien.ma , hd.nhanVien.hoTen , hd.ngayThanhToan,"
-                  + "hd.hinhThucThanhToan , hd.tongTien , hd.tienMat)"
-                  + " from HoaDon hd "
+        String hql = "Select new viewmodel.HoaDonViewModel( hd.ma , hd.nhanVien.ma , hd.nhanVien.hoTen , hd.ngayThanhToan,"
+                + "hd.hinhThucThanhToan , hd.tongTien , hd.tienMat)"
+                + " from HoaDon hd "
                 + "where hd.khachHang.ma = :ma";
-           Session ss = HibernateUtil.getSession();
-            ss.getTransaction().begin();
-           TypedQuery<HoaDonViewModel> query = ss.createQuery(hql).setParameter("ma", ma);
-           List<HoaDonViewModel> list = query.getResultList();	 
-          ss.close();
-	  return list.isEmpty()?new ArrayList<>():list;	
-      }
-         
-         public List<SPHDViewModel> getHDCTByMaHD(String maHD){
-              String hql = "Select new viewmodel.SPHDViewModel( "
-                      + "hd.IdChiTietSanPham.bia.ma ,"
-                      + " hd.IdChiTietSanPham.bia.ten , "
-                      + "hd.donGia , "
-                      + "hd.soLuong,"
-                      + "hd.IdChiTietSanPham.theTich,"
-                      + "hd.IdChiTietSanPham.loaiSP.ten, "
-                      + " hd.IdChiTietSanPham.nsx.ten)"
-                  + " from HoaDonChiTiet hd "
-                + "where hd.IdHoaDon.ma = :ma";
-           Session ss = HibernateUtil.getSession();
-            ss.getTransaction().begin();
-           TypedQuery<SPHDViewModel> query = ss.createQuery(hql).setParameter("ma", maHD);
-           List<SPHDViewModel> list = query.getResultList();	 
-          ss.close();
-	  return list.isEmpty()?new ArrayList<>():list;	
-         }
-         public static void main(String[] args) {
-             KhachHangRepository khr = new KhachHangRepository();
-             //HD001
-//             String ma = "maHD ,maNV,Ten NV , ngayThanhToan=2023-03-12 00:00:00.0, hinhThucThanhToan=1, tongTien=20000.0000, tienMat=20000.0000, tienChuyenKhoan=0.0000)";
-             khr.getHDCTByMaHD("HD001").forEach(s -> System.out.println(s.toString()));
+        Session ss = HibernateUtil.getSession();
+        ss.getTransaction().begin();
+        TypedQuery<HoaDonViewModel> query = ss.createQuery(hql).setParameter("ma", ma);
+        List<HoaDonViewModel> list = query.getResultList();
+        ss.close();
+        return list.isEmpty() ? new ArrayList<>() : list;
     }
-     
+
+    public List<SPHDViewModel> getHDCTByMaHD(String maHD) {
+        String hql = "Select new viewmodel.SPHDViewModel( "
+                + "hd.IdChiTietSanPham.bia.ma ,"
+                + " hd.IdChiTietSanPham.bia.ten , "
+                + "hd.donGia , "
+                + "hd.soLuong,"
+                + "hd.IdChiTietSanPham.theTich,"
+                + "hd.IdChiTietSanPham.loaiSP.ten, "
+                + " hd.IdChiTietSanPham.nsx.ten)"
+                + " from HoaDonChiTiet hd "
+                + "where hd.IdHoaDon.ma = :ma";
+        Session ss = HibernateUtil.getSession();
+        ss.getTransaction().begin();
+        TypedQuery<SPHDViewModel> query = ss.createQuery(hql).setParameter("ma", maHD);
+        List<SPHDViewModel> list = query.getResultList();
+        ss.close();
+        return list.isEmpty() ? new ArrayList<>() : list;
+    }
+
+    public static void main(String[] args) {
+        KhachHangRepository khr = new KhachHangRepository();
+        //HD001
+//             String ma = "maHD ,maNV,Ten NV , ngayThanhToan=2023-03-12 00:00:00.0, hinhThucThanhToan=1, tongTien=20000.0000, tienMat=20000.0000, tienChuyenKhoan=0.0000)";
+        khr.getHDCTByMaHD("HD001").forEach(s -> System.out.println(s.toString()));
+    }
+
 }
