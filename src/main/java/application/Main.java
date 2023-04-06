@@ -11,8 +11,9 @@ import views.TrangChu;
  * @author dongl
  */
 public class Main {
-    public static TrangChu tt = new TrangChu();
+    
     public static void main(String[] args) {
-        tt.setVisible(true);
+        System.out.println("hello");
+        
     }
 }

@@ -250,7 +250,7 @@ public class viewBanHang extends javax.swing.JPanel {
         });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel3.setText("Ngày TT");
+        jLabel3.setText("Tiền mặt");
 
         txtNgayTao.setEnabled(false);
 
@@ -282,7 +282,7 @@ public class viewBanHang extends javax.swing.JPanel {
         lblTongTien.setText("...");
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel10.setText("Tiền khách đưa");
+        jLabel10.setText("Chuyển khoản");
 
         txtTienKhachDua.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
