@@ -15,6 +15,7 @@ public class test extends javax.swing.JFrame {
      */
     public test() {
         initComponents();
+        this.add(new viewQLNhanVien());
     }
 
     /**

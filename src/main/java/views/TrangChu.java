@@ -16,6 +16,7 @@ import javax.swing.border.LineBorder;
 import swing.ThongBao;
 import view.QuanLyKhachHang;
 import view.ViewQLKH;
+import view.ViewQLVoucher;
 import view.viewBanHang;
 import view.viewQLKhachHang;
 import view.viewQLKhuyenMai;
