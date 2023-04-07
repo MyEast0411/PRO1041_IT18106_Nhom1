@@ -320,6 +320,7 @@ public class DotKhuyenMaiRepository {
             s.getTransaction().commit();
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }

@@ -25,6 +25,7 @@ import utilities.ThreadRunLoadTableBiaKM_Hoi;
 
 public class viewQLKhuyenMai extends javax.swing.JPanel {
 
+    String trangThaiFilter;
     private DefaultTableModel dtm = (DefaultTableModel) new DefaultTableModel();
     private ServiceDotKhuyenMai serviceDKM = new ServiceDotKhuyenMaiImpl();
 
@@ -700,7 +701,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
     private void rdoTatCaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoTatCaActionPerformed
         // TODO add your handling code here:
         trangThaiFilter = "";
-        loadTableBiaKM();
+        loadTableBiaKM2();
     }//GEN-LAST:event_rdoTatCaActionPerformed
 
     private void rdoDangDienRaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoDangDienRaActionPerformed
@@ -802,17 +803,26 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         Bia selectedBia = (Bia) cbbTenBia.getSelectedItem();
         String tenSanPham = selectedBia.getTen();
         List<SanPhamChiTiet> spctList = serviceDKM.findByTenSanPham(tenSanPham);
+        Date currentDate = new Date();
         boolean isSuccess = false;
+        boolean checkDate = false;
         if (spctList != null) {
             for (SanPhamChiTiet spct : spctList) {
-                if (serviceDKM.apDungKM(spct, dotKM)) {
+                if (dotKM.getNgayKetThuc().after(currentDate)) {
+                    checkDate = true;
+                }
+                if (serviceDKM.apDungKM(spct, dotKM) && checkDate) {
                     isSuccess = true;
                 }
             }
+        } else {
+            System.out.println(" List<SanPhamChiTiet> spctList = serviceDKM.findByTenSanPham(tenSanPham) is null");
         }
         if (isSuccess) {
             JOptionPane.showMessageDialog(this, "Áp dụng thành công");
             loadTableBiaKM();
+        } else {
+            JOptionPane.showMessageDialog(this, "Đợt khuyến mại đã kết thúc");
         }
     }//GEN-LAST:event_btnApDungKMActionPerformed
 
@@ -869,20 +879,20 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
                 this.clear();
             }
         }
-        }
+    }
 
-        public void deleteOne() {
-            DotKhuyenMai dkm = new DotKhuyenMai();
-            for (DotKhuyenMai x : serviceDKM.getList()) {
-                dkm.setId(x.getId());
-            }
-            if (serviceDKM.deleteOne(dkm)) {
-                JOptionPane.showMessageDialog(this, "Xóa thành công");
-                this.loadTable();
-            } else {
-                JOptionPane.showMessageDialog(this, "Xóa thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-            this.clear();
+    public void deleteOne() {
+        DotKhuyenMai dkm = new DotKhuyenMai();
+        for (DotKhuyenMai x : serviceDKM.getList()) {
+            dkm.setId(x.getId());
+        }
+        if (serviceDKM.deleteOne(dkm)) {
+            JOptionPane.showMessageDialog(this, "Xóa thành công");
+            this.loadTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Xóa thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+        this.clear();
     }//GEN-LAST:event_btnXoaActionPerformed
 
     private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
@@ -974,7 +984,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
     public void loadTableBiaKM() {
         dtm = (DefaultTableModel) tblSanPhamKM.getModel();
         dtm.setRowCount(0);
-        String[] columnNames = {"STT", "Mã bia", "Tên bia", "Đợt KM được áp dụng", "Giá cũ", "Mức giảm", "Giá sau khi giảm", "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái", "Mã ĐKM"};
+        String[] columnNames = {"STT", "Mã bia", "Tên bia", "Loại bia", "Đợt KM được áp dụng", "Giá cũ", "Mức giảm", "Giá sau khi giảm", "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái", "Mã ĐKM"};
         dtm.setColumnIdentifiers(columnNames);
         int stt = 1;
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -1016,20 +1026,20 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
                 serviceDKM.updateGiaConLaiBiaKM(spkm, spkm.getChiTietSanPham().getGiaBan());
                 spkm.setGiaConLai(spkm.getChiTietSanPham().getGiaBan());
             }
-            dtm.addRow(new Object[]{
-                stt++,
-                spkm.getChiTietSanPham().getBia().getMa(),
-                spkm.getChiTietSanPham().getBia().getTen(),
-                spkm.getKhuyenMai().getTen(),
-                decimalFormat.format(giaCu),
-                giaTriPhanTram > 0 ? (decimalFormat.format(giaTriPhanTram) + "%") : decimalFormat.format(giaTriTienMat),
-                decimalFormat.format(mucGiaSauKhiGiam),
-                formatter.format(spkm.getKhuyenMai().getNgayBatDau()),
-                formatter.format(spkm.getKhuyenMai().getNgayKetThuc()),
-                trangThai,
-                spkm.getKhuyenMai().getMa()
-            });
-
+                dtm.addRow(new Object[]{
+                    stt++,
+                    spkm.getChiTietSanPham().getBia().getMa(),
+                    spkm.getChiTietSanPham().getBia().getTen(),
+                    spkm.getChiTietSanPham().getLoaiSP(),
+                    spkm.getKhuyenMai().getTen(),
+                    decimalFormat.format(giaCu),
+                    giaTriPhanTram > 0 ? (decimalFormat.format(giaTriPhanTram) + "%") : decimalFormat.format(giaTriTienMat),
+                    decimalFormat.format(mucGiaSauKhiGiam),
+                    formatter.format(spkm.getKhuyenMai().getNgayBatDau()),
+                    formatter.format(spkm.getKhuyenMai().getNgayKetThuc()),
+                    trangThai,
+                    spkm.getKhuyenMai().getMa()
+                });
         }
         // ẩn cột Mã DKM
         TableColumnModel tcm = tblSanPhamKM.getColumnModel();
@@ -1039,7 +1049,82 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         tcm.getColumn(tcm.getColumnIndex("Đợt KM được áp dụng")).setMinWidth(140);
         tcm.getColumn(tcm.getColumnIndex("STT")).setMaxWidth(35);
         tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(100);
-        this.rdoTatCa.setSelected(true);
+        
+        tcm.getColumn(tcm.getColumnIndex("Loại bia")).setMinWidth(140);
+
+//        this.rdoTatCa.setSelected(true);
+    }
+    public void loadTableBiaKM2() {
+        dtm = (DefaultTableModel) tblSanPhamKM.getModel();
+        dtm.setRowCount(0);
+        String[] columnNames = {"STT", "Mã bia", "Tên bia", "Loại bia", "Đợt KM được áp dụng", "Giá cũ", "Mức giảm", "Giá sau khi giảm", "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái", "Mã ĐKM"};
+        dtm.setColumnIdentifiers(columnNames);
+        int stt = 1;
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        List<BiaKhuyenMai> list = serviceDKM.getListBiaKhuyenMai();
+        for (BiaKhuyenMai spkm : list) {
+            //update trạng thái theo ngày hiện tại
+            if (serviceDKM.updateTTBiaKM(spkm.getChiTietSanPham(), spkm.getKhuyenMai())) {
+                System.out.println("Updated Trang thai.");
+            } else {
+                System.out.println("Update failed trang thai.");
+            }
+
+            //set trạng thái
+            String trangThai = "";
+            trangThai = switch (spkm.getTrangThai()) {
+                case 2 ->
+                    "Chưa diễn ra";
+                case 1 ->
+                    "Đang diễn ra";
+                case 0 ->
+                    "Đã kết thúc";
+                default ->
+                    "";
+            };
+            BigDecimal giaCu = spkm.getDonGia();
+            float giaTriPhanTram = spkm.getKhuyenMai().getGiaTriPhanTram();
+            BigDecimal giaTriTienMat = spkm.getKhuyenMai().getGiaTriTienMat();
+            BigDecimal mucGiaSauKhiGiam = giaCu.subtract(giaCu.multiply(BigDecimal.valueOf(giaTriPhanTram / 100))).subtract(giaTriTienMat);
+            if (spkm.getTrangThai() == 1) {
+                // tính giá còn lại
+                if (serviceDKM.updateGiaConLaiBiaKM(spkm, mucGiaSauKhiGiam)) {
+                    System.out.println("Updated gia_con_lai.");
+                } else {
+                    System.out.println("Failed updated gia_con_lai.");
+                }
+                spkm.setGiaConLai(mucGiaSauKhiGiam);
+            } else {
+                serviceDKM.updateGiaConLaiBiaKM(spkm, spkm.getChiTietSanPham().getGiaBan());
+                spkm.setGiaConLai(spkm.getChiTietSanPham().getGiaBan());
+            }
+            if (trangThaiFilter.isEmpty() || trangThaiFilter.equals(trangThai)) {
+                dtm.addRow(new Object[]{
+                    stt++,
+                    spkm.getChiTietSanPham().getBia().getMa(),
+                    spkm.getChiTietSanPham().getBia().getTen(),
+                    spkm.getChiTietSanPham().getLoaiSP(),
+                    spkm.getKhuyenMai().getTen(),
+                    decimalFormat.format(giaCu),
+                    giaTriPhanTram > 0 ? (decimalFormat.format(giaTriPhanTram) + "%") : decimalFormat.format(giaTriTienMat),
+                    decimalFormat.format(mucGiaSauKhiGiam),
+                    formatter.format(spkm.getKhuyenMai().getNgayBatDau()),
+                    formatter.format(spkm.getKhuyenMai().getNgayKetThuc()),
+                    trangThai,
+                    spkm.getKhuyenMai().getMa()
+                });
+            }
+        }
+        // ẩn cột Mã DKM
+        TableColumnModel tcm = tblSanPhamKM.getColumnModel();
+        tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMinWidth(0);
+        tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMaxWidth(0);
+        //set độ rộng cột Tên DKM
+        tcm.getColumn(tcm.getColumnIndex("Đợt KM được áp dụng")).setMinWidth(140);
+        tcm.getColumn(tcm.getColumnIndex("STT")).setMaxWidth(35);
+        tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(100);
+//        this.rdoTatCa.setSelected(true);
     }
 
     public void loadTableKhachHangKM() {
@@ -1075,77 +1160,6 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
                 decimalFormat.format(ncckm.getDonGia()),
                 decimalFormat.format(ncckm.getGiaConLai()),});
         }
-    }    String trangThaiFilter;
-    public void loadTableBiaKM2() {
-        dtm = (DefaultTableModel) tblSanPhamKM.getModel();
-        dtm.setRowCount(0);
-        String[] columnNames = {"STT", "Mã bia", "Tên bia", "Đợt KM được áp dụng", "Giá cũ", "Mức giảm", "Giá sau khi giảm", "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái", "Mã ĐKM"};
-        dtm.setColumnIdentifiers(columnNames);
-        int stt = 1;
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        List<BiaKhuyenMai> list = serviceDKM.getListBiaKhuyenMai();
-        for (BiaKhuyenMai spkm : list) {
-            //update trạng thái theo ngày hiện tại
-            if (serviceDKM.updateTTBiaKM(spkm.getChiTietSanPham(), spkm.getKhuyenMai())) {
-                System.out.println("Updated Trang thai.");
-            } else {
-                System.out.println("Update failed trang thai.");
-            }
-
-            //set trạng thái
-            String trangThai = "";
-            trangThai = switch (spkm.getTrangThai()) {
-                case 2 ->
-                    "Chưa diễn ra";
-                case 1 ->
-                    "Đang diễn ra";
-                case 0 ->
-                    "Đã kết thúc";
-                default ->
-                    "";
-            };
-            if (trangThaiFilter.isEmpty() || trangThaiFilter.equals(trangThai)) {
-                BigDecimal giaCu = spkm.getDonGia();
-                float giaTriPhanTram = spkm.getKhuyenMai().getGiaTriPhanTram();
-                BigDecimal giaTriTienMat = spkm.getKhuyenMai().getGiaTriTienMat();
-                BigDecimal mucGiaSauKhiGiam = giaCu.subtract(giaCu.multiply(BigDecimal.valueOf(giaTriPhanTram / 100))).subtract(giaTriTienMat);
-                if (spkm.getTrangThai() == 1) {
-                    // tính giá còn lại
-                    if (serviceDKM.updateGiaConLaiBiaKM(spkm, mucGiaSauKhiGiam)) {
-                        System.out.println("Updated gia_con_lai.");
-                    } else {
-                        System.out.println("Failed updated gia_con_lai.");
-                    }
-                    spkm.setGiaConLai(mucGiaSauKhiGiam);
-                } else {
-                    serviceDKM.updateGiaConLaiBiaKM(spkm, spkm.getChiTietSanPham().getGiaBan());
-                    spkm.setGiaConLai(spkm.getChiTietSanPham().getGiaBan());
-                }
-                dtm.addRow(new Object[]{
-                    stt++,
-                    spkm.getChiTietSanPham().getBia().getMa(),
-                    spkm.getChiTietSanPham().getBia().getTen(),
-                    spkm.getKhuyenMai().getTen(),
-                    decimalFormat.format(giaCu),
-                    giaTriPhanTram > 0 ? (decimalFormat.format(giaTriPhanTram) + "%") : decimalFormat.format(giaTriTienMat),
-                    decimalFormat.format(mucGiaSauKhiGiam),
-                    formatter.format(spkm.getKhuyenMai().getNgayBatDau()),
-                    formatter.format(spkm.getKhuyenMai().
-                    getNgayKetThuc()),
-                    trangThai,
-                    spkm.getKhuyenMai().getMa()
-                });
-            }
-        }
-// ẩn cột Mã DKM
-        TableColumnModel tcm = tblSanPhamKM.getColumnModel();
-        tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMinWidth(0);
-        tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMaxWidth(0);
-        //set độ rộng cột Tên DKM
-        tcm.getColumn(tcm.getColumnIndex("Đợt KM được áp dụng")).setMinWidth(140);
-        tcm.getColumn(tcm.getColumnIndex("STT")).setMaxWidth(35);
-        tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(100);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
