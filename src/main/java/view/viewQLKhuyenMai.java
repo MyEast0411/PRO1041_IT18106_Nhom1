@@ -822,7 +822,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Áp dụng thành công");
             loadTableBiaKM();
         } else {
-            JOptionPane.showMessageDialog(this, "Đợt khuyến mại đã kết thúc");
+            JOptionPane.showMessageDialog(null, "Đợt khuyến mại đã kết thúc hoặc được áp dụng 2 lần", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnApDungKMActionPerformed
 
@@ -1026,34 +1026,34 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
                 serviceDKM.updateGiaConLaiBiaKM(spkm, spkm.getChiTietSanPham().getGiaBan());
                 spkm.setGiaConLai(spkm.getChiTietSanPham().getGiaBan());
             }
-                dtm.addRow(new Object[]{
-                    stt++,
-                    spkm.getChiTietSanPham().getBia().getMa(),
-                    spkm.getChiTietSanPham().getBia().getTen(),
-                    spkm.getChiTietSanPham().getLoaiSP(),
-                    spkm.getKhuyenMai().getTen(),
-                    decimalFormat.format(giaCu),
-                    giaTriPhanTram > 0 ? (decimalFormat.format(giaTriPhanTram) + "%") : decimalFormat.format(giaTriTienMat),
-                    decimalFormat.format(mucGiaSauKhiGiam),
-                    formatter.format(spkm.getKhuyenMai().getNgayBatDau()),
-                    formatter.format(spkm.getKhuyenMai().getNgayKetThuc()),
-                    trangThai,
-                    spkm.getKhuyenMai().getMa()
-                });
+            dtm.addRow(new Object[]{
+                stt++,
+                spkm.getChiTietSanPham().getBia().getMa(),
+                spkm.getChiTietSanPham().getBia().getTen(),
+                spkm.getChiTietSanPham().getLoaiSP(),
+                spkm.getKhuyenMai().getTen(),
+                decimalFormat.format(giaCu),
+                giaTriPhanTram > 0 ? (decimalFormat.format(giaTriPhanTram) + "%") : decimalFormat.format(giaTriTienMat),
+                decimalFormat.format(mucGiaSauKhiGiam),
+                formatter.format(spkm.getKhuyenMai().getNgayBatDau()),
+                formatter.format(spkm.getKhuyenMai().getNgayKetThuc()),
+                trangThai,
+                spkm.getKhuyenMai().getMa()
+            });
         }
         // ẩn cột Mã DKM
         TableColumnModel tcm = tblSanPhamKM.getColumnModel();
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMinWidth(0);
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMaxWidth(0);
-        //set độ rộng cột Tên DKM
+        //set độ rộng cột
         tcm.getColumn(tcm.getColumnIndex("Đợt KM được áp dụng")).setMinWidth(140);
         tcm.getColumn(tcm.getColumnIndex("STT")).setMaxWidth(35);
         tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(100);
-        
         tcm.getColumn(tcm.getColumnIndex("Loại bia")).setMinWidth(140);
-
-//        this.rdoTatCa.setSelected(true);
+        tcm.getColumn(tcm.getColumnIndex("Giá sau khi giảm")).setMinWidth(100);
+        tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(70);
     }
+
     public void loadTableBiaKM2() {
         dtm = (DefaultTableModel) tblSanPhamKM.getModel();
         dtm.setRowCount(0);
@@ -1120,11 +1120,13 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         TableColumnModel tcm = tblSanPhamKM.getColumnModel();
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMinWidth(0);
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMaxWidth(0);
-        //set độ rộng cột Tên DKM
+        //set độ rộng cột 
         tcm.getColumn(tcm.getColumnIndex("Đợt KM được áp dụng")).setMinWidth(140);
         tcm.getColumn(tcm.getColumnIndex("STT")).setMaxWidth(35);
         tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(100);
-//        this.rdoTatCa.setSelected(true);
+        tcm.getColumn(tcm.getColumnIndex("Loại bia")).setMinWidth(140);
+        tcm.getColumn(tcm.getColumnIndex("Giá sau khi giảm")).setMinWidth(100);
+        tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(70);
     }
 
     public void loadTableKhachHangKM() {

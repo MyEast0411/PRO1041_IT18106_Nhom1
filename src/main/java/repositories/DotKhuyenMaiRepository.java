@@ -298,7 +298,6 @@ public class DotKhuyenMaiRepository {
             query.setParameter("km", km);
             List<BiaKhuyenMai> biaKMList = query.list();
             if (!biaKMList.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Một đợt khuyến mại không thể được áp dụng 2 lần cho cùng một sản phẩm", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return false;
             }
             // Apply the promotion to the product
