@@ -28,7 +28,7 @@ public class ThreadRunLoadTableBiaKM_Hoi implements Runnable {
             try {
                 // Gọi lại phương thức loadTableBiaKM để cập nhật bảng
                 view.loadTableBiaKM();
-                Thread.sleep(60000); // Dừng thread trong 1 phut'
+                Thread.sleep(60000); 
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
