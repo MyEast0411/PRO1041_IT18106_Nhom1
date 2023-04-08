@@ -46,4 +46,9 @@ public class BiaService implements BiaInterface {
        return biaRes.TimKiemTheoTenSP(tenSP);
     }
 
+    @Override
+    public Bia_ getBiaById(String id) {
+        return biaRes.getBiaById(id);
+    }
+
 }

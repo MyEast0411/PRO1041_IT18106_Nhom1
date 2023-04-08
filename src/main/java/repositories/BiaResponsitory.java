@@ -38,6 +38,29 @@ public class BiaResponsitory {
         }
         return null;
     }
+    public Bia_ getBiaById(String id) {
+        String sql = "select * from Bia";
+        Bia_ bia = new Bia_();
+        try {
+            Connection c = JDBCUtils.getConnection();
+            PreparedStatement ps = c.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                
+                bia.setId(rs.getString(1));
+                bia.setMa(rs.getString(2));
+                bia.setTen(rs.getString(3));
+                
+            }
+            c.close();
+            ps.close();
+            rs.close();
+            return bia;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public Boolean addBia(Bia_ b) {
         String sql = "insert into bia(id,ma,ten) values(newID(),?,?)";
@@ -125,7 +148,9 @@ public class BiaResponsitory {
             e.printStackTrace();
         }
         return null;
-    }    
+    }  
+        
+        
 
     public static void main(String[] args) {
         BiaResponsitory biarp = new BiaResponsitory();

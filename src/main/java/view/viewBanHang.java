@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import repositories.SPCTRepo;
 import service.ServiceHoaDon;
 import service.ServiceHoaDonChiTiet;
 import service.ServiceKhachHang;
@@ -50,7 +51,8 @@ public class viewBanHang extends javax.swing.JPanel {
      */
     private ServiceHoaDon ssHD = new ServiceHoaDonImpl();
     private ServiceHoaDonChiTiet ssHDCT = new ServiceHoaDonChiTietImpl();
-    private ServiceSanPhamChiTiet ssSPCT = new ServiceSanPhamChiTietImpl();
+   // private ServiceSanPhamChiTiet ssSPCT = new ServiceSanPhamChiTietImpl();
+    private SPCTRepo ssSPCT = new SPCTRepo();
     public DefaultTableModel dtm = new DefaultTableModel();
     private Integer stt = 1;
     private SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -862,7 +864,7 @@ public class viewBanHang extends javax.swing.JPanel {
             return;
         }
         String maSP = txtTimKiem.getText().trim();
-        SanPhamChiTiet spct = ss.getSPCTByMa(maSP);
+        SanPhamChiTiet spct = ssSPCT.findByMa(maSP);
         if (spct == null) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy mã sản phẩm này");
             return;
@@ -899,7 +901,7 @@ public class viewBanHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Số lượng phải nhập số");
             return;
         }
-        SanPhamChiTiet spct = ss.getSPCTByMa(maSP);
+        SanPhamChiTiet spct =  ssSPCT.findByMa(maSP);
         HoaDon hd = ssHD.getHoaDonByMa(maHD);
         HoaDonChiTiet hdct = new HoaDonChiTiet();
         hdct.setSoLuong(soLuong);
@@ -955,7 +957,7 @@ public class viewBanHang extends javax.swing.JPanel {
             return;
         }
         String ma = this.tblHoaDon.getValueAt(row, 1).toString();
-        SanPhamChiTiet spct = ssSPCT.getSPCTByMa(ma);
+        SanPhamChiTiet spct = ssSPCT.findByMa(ma);
         this.txtMa.setText(spct.getMa());
         this.txtTenSP.setText(spct.getBia().getTen());
         this.txtLoaiSP.setText(spct.getLoaiSP().getTen());
@@ -978,7 +980,7 @@ public class viewBanHang extends javax.swing.JPanel {
         String maSP = txtMa.getText().trim();
         String maHD = lblMaHD.getText().trim();
         HoaDon hd = ssHD.getHoaDonByMa(maHD);
-        SanPhamChiTiet spct = ssSPCT.getSPCTByMa(maSP);
+        SanPhamChiTiet spct = ssSPCT.findByMa(maSP);
         System.out.println(hd.getId());
         System.out.println(spct.getId());
         int choice = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa không", "Xóa bia", JOptionPane.YES_NO_OPTION);
@@ -1074,7 +1076,8 @@ public class viewBanHang extends javax.swing.JPanel {
                 SanPhamChiTiet spct = x.getIdChiTietSanPham();
                 Integer soLuong = x.getSoLuong();
                 spct.setSoLuongTon(spct.getSoLuongTon() - soLuong);
-                ssSPCT.updateSoLuong(spct);
+                //Viết hàm giúp tao phát
+              //  ssSPCT.updateSoLuong(spct);
             }
             hd.setTongTien(tt);
             hd.setNgayThanhToan(new Date());

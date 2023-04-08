@@ -13,6 +13,7 @@ import model.Bia_;
  */
 public interface BiaInterface {
     public ArrayList<Bia_> getAllBia();
+    public Bia_ getBiaById(String id);
     public Boolean addBia(Bia_ b);
      public Boolean updateBia(Bia_ b);
      public Boolean deleteBia(String ma);

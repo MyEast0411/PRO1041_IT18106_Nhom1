@@ -19,14 +19,15 @@ import model.Bia_;
 import model.LoaiSanPham_;
 import model.NSX_;
 import model.SanPhamChiTiet_;
+import repositories.SPCTRepo;
 import service.impl.BiaService;
 import service.impl.LoaiSPService;
 import service.impl.NSXService;
 import service.impl.SanPhamChiTietService;
 import viewmodel.SPCTBiaNsxLoaiSp;
+import viewmodel.SPCTBiaNsxLoaiSpHiber;
 
 /**
- *
  * @author dongl
  */
 public class viewQLSanPham extends javax.swing.JPanel {
@@ -35,6 +36,7 @@ public class viewQLSanPham extends javax.swing.JPanel {
     public BiaService biaSer;
     public LoaiSPService loaiSPSer;
     public NSXService nsxSer;
+    public SPCTRepo cTRepo;
 
     public DefaultTableModel modelTable = new DefaultTableModel();
     public SanPhamChiTiet_ spct;
@@ -49,6 +51,7 @@ public class viewQLSanPham extends javax.swing.JPanel {
         biaSer = new BiaService();
         loaiSPSer = new LoaiSPService();
         nsxSer = new NSXService();
+        cTRepo = new SPCTRepo();
         loadCbbBia();
         loadCbbLoaiSP();
         loadCbbNSX();
@@ -180,6 +183,7 @@ public class viewQLSanPham extends javax.swing.JPanel {
         btnThem = new swing.ButtonCustom();
         btnSua = new swing.ButtonCustom();
         btnClear = new swing.ButtonCustom();
+        btnTach = new swing.ButtonCustom();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblQLSanPham = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
@@ -254,6 +258,16 @@ public class viewQLSanPham extends javax.swing.JPanel {
             }
         });
 
+        btnTach.setBackground(new java.awt.Color(0, 204, 204));
+        btnTach.setForeground(new java.awt.Color(255, 255, 255));
+        btnTach.setText("Tách Thùng");
+        btnTach.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnTach.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTachActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -261,8 +275,9 @@ public class viewQLSanPham extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnTach, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(16, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
@@ -271,16 +286,18 @@ public class viewQLSanPham extends javax.swing.JPanel {
                     .addContainerGap(16, Short.MAX_VALUE)))
         );
 
-        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnSua, btnThem});
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnClear, btnSua, btnTach, btnThem});
 
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(119, 119, 119)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
                 .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(196, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(btnTach, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(122, 122, 122))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(108, 108, 108)
@@ -288,7 +305,7 @@ public class viewQLSanPham extends javax.swing.JPanel {
                     .addContainerGap(273, Short.MAX_VALUE)))
         );
 
-        jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnSua, btnThem});
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnClear, btnSua, btnTach, btnThem});
 
         tblQLSanPham.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         tblQLSanPham.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -796,10 +813,192 @@ public class viewQLSanPham extends javax.swing.JPanel {
 
     }//GEN-LAST:event_btnClearActionPerformed
 
+    private void btnTachActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTachActionPerformed
+        // Tach thung va chuyen so luon ton
+        int row = tblQLSanPham.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "bạn chưa chọn thùng để tách !!!");
+            return;
+        }
+        if (tblQLSanPham.getValueAt(row, 7).toString().equalsIgnoreCase("lon")) {
+            JOptionPane.showMessageDialog(this, "Khong the tach lon");
+            return;
+        }
+
+        String ma = tblQLSanPham.getValueAt(row, 1).toString();
+        SanPhamChiTiet ctspExist = cTRepo.findByMa(ma);
+        if (ctspExist == null) {
+            return;
+        }else if (ctspExist.getSoLuongTon() <= 0) {
+            JOptionPane.showMessageDialog(this, "San pham da het hang , khoong the tach");
+            return;
+        }
+        SanPhamChiTiet spctLon = cTRepo.findByMa(ctspExist.getMa()+"_lon");
+        if (spctLon == null) {
+            SanPhamChiTiet chiTiet = new SanPhamChiTiet();
+            chiTiet.setMa(ctspExist.getMa()+"_lon");
+            chiTiet.setBia(ctspExist.getBia());
+            chiTiet.setGiaBan(ctspExist.getGiaBan());
+            chiTiet.setGiaNhap(ctspExist.getGiaNhap());
+            chiTiet.setHanSD(ctspExist.getHanSD());
+            chiTiet.setLoaiSP(ctspExist.getLoaiSP());
+            chiTiet.setNgaySanXuat(ctspExist.getNgaySanXuat());
+            chiTiet.setNongDoCon(ctspExist.getNongDoCon());
+            chiTiet.setNsx(ctspExist.getNsx());
+            chiTiet.setSoLuongLonBia(1);
+            chiTiet.setThanhPhan(ctspExist.getThanhPhan());
+            chiTiet.setTheTich(ctspExist.getTheTich());
+            chiTiet.setTinhTrang(1);
+            chiTiet.setTrangThai(0);
+            chiTiet.setXuatXu(ctspExist.getXuatXu());
+            chiTiet.setSoLuongTon(24);
+            System.out.println("insert");
+            int choice = JOptionPane.showConfirmDialog(this, "Ban chac chan muon tach khong ?", "Warning",
+                JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                boolean kq = cTRepo.insert(chiTiet);
+                if (kq) {
+                    ctspExist.setSoLuongTon(ctspExist.getSoLuongTon()-1);
+                    boolean kqDelete = cTRepo.updateSL(ctspExist);
+                    System.out.println(kqDelete);
+                     loadTable(spctSer.getAllSPCTBiaNsxLoaiSp());
+                }
+            }
+        }else{
+            System.out.println("update");
+            int choice = JOptionPane.showConfirmDialog(this, "Ban chac chan muon tach khong ?", "Warning",
+                JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                spctLon.setSoLuongTon(spctLon.getSoLuongTon() + 24 );
+                boolean kqUpdate = cTRepo.updateSL(spctLon);
+                ctspExist.setSoLuongTon(ctspExist.getSoLuongTon()-1);
+                boolean kqDelete = cTRepo.updateSL(ctspExist);
+
+                 loadTable(spctSer.getAllSPCTBiaNsxLoaiSp());
+            }
+
+        }
+
+        //        int row = tblCTSP.getSelectedRow();
+        //        int sl;
+        //        if (row == -1) {
+            //            JOptionPane.showMessageDialog(this, "bạn chưa chọn thùng để tách !!!");
+            //            return;
+            //        }
+        //        String ma = tblCTSP.getValueAt(row, 1).toString();
+        //        SanPhamChiTiet ctspExist = cTRepo.findByMa(ma);
+        //        if (ctspExist == null) {
+            //            return;
+            //        }
+
+        //        String input = JOptionPane.showInputDialog("Moi ban nhap so luong muon lay tu thung(Sl <24 va sl >0) : ");
+        //        if (input == null) {
+            //            JOptionPane.showMessageDialog(this, "Ban chua nhap so luong");
+            //            return;
+            //        }
+        //
+        //        try {
+            //            sl = Integer.parseInt(input.trim());
+            //            if (sl >= 24 || sl <= 0) {
+                //                JOptionPane.showMessageDialog(this, "So luong phai > 0 va < 24");
+                //                return;
+                //            }
+            //        } catch (Exception e) {
+            //            JOptionPane.showMessageDialog(this, "Ban phai nhap so ");
+            //            return;
+            //        }
+
+        //        List<SanPhamChiTiet> list = new ArrayList<>();
+        //        for (int i = 0; i < 24; i++) {
+            //            SanPhamChiTiet chiTiet = new SanPhamChiTiet();
+            //            chiTiet.setMa(tblCTSP.getValueAt(row, 1).toString() + "_" + (i + 1));
+
+            //        // lay bia
+            //        Bia bia = (Bia) tblCTSP.getValueAt(row, 2);
+            //        chiTiet.setBia(bia);
+            ////        System.out.println("Bia " + bia.toString());
+            // //       chiTiet.setBia();
+            //
+            //       // lay laoi sp
+            //        LoaiSP loaiSP =  (LoaiSP) tblCTSP.getValueAt(row, 3);
+            //        chiTiet.setLoaiSP(loaiSP);
+            ////        System.out.println("Loai sp " + loaiSP.toString());
+            //        // lay NSX
+            //            NSX nsx = (NSX) tblCTSP.getValueAt(row, 4);
+            //        chiTiet.setNsx(nsx);
+            //        // lay the tich
+            //        chiTiet.setTheTich(tblCTSP.getValueAt(row, 5).toString());
+            //
+            //        // lay nong do con
+            //        chiTiet.setNongDoCon(tblCTSP.getValueAt(row,6).toString());
+            //
+            //        // lay trangThai
+            //        chiTiet.setTrangThai(0);
+            //
+            //        // lay soLuongLonBia
+            //        chiTiet.setSoLuongLonBia("1 lon");
+            //
+            //        // lay giaNhap
+            //
+            //        chiTiet.setGiaNhap(new BigDecimal(tblCTSP.getValueAt(row, 9).toString()));
+            //        // lay giaBan
+            //
+            //        chiTiet.setGiaBan(new BigDecimal(tblCTSP.getValueAt(row, 10).toString()));
+            //        // lay hanSD
+            //
+            //        chiTiet.setHanSD(tblCTSP.getValueAt(row, 11).toString());
+            //        // lay xuatXu
+            //
+            //        chiTiet.setXuatXu(tblCTSP.getValueAt(row, 12).toString());
+            //        // lay thanhPhan
+            //
+            //        chiTiet.setThanhPhan(tblCTSP.getValueAt(row, 13).toString());
+            //        // lay tinhTrang
+            //
+            //        chiTiet.setTinhTrang(1);
+            //            chiTiet.setBia(ctspExist.getBia());
+            //            chiTiet.setGiaBan(ctspExist.getGiaBan());
+            //            chiTiet.setGiaNhap(ctspExist.getGiaNhap());
+            //            chiTiet.setHanSD(ctspExist.getHanSD());
+            //            chiTiet.setLoaiSP(ctspExist.getLoaiSP());
+            //            chiTiet.setNgaySanXuat(ctspExist.getNgaySanXuat());
+            //            chiTiet.setNongDoCon(ctspExist.getNongDoCon());
+            //            chiTiet.setNsx(ctspExist.getNsx());
+            //            chiTiet.setSoLuongLonBia(1);
+            //            chiTiet.setThanhPhan(ctspExist.getThanhPhan());
+            //            chiTiet.setTheTich(ctspExist.getTheTich());
+            //            chiTiet.setTinhTrang(0);
+            //            chiTiet.setTrangThai(ctspExist.getTrangThai());
+            //            chiTiet.setXuatXu(ctspExist.getXuatXu());
+            //            list.add(chiTiet);
+            //        }
+        //        for (SanPhamChiTiet s : list) {
+            //            System.out.println(s.toString());
+            //        }
+        //        Bia bia = (Bia) tblCTSP.getValueAt(row, 2);
+        //        LoaiSP loaiSP = (LoaiSP) tblCTSP.getValueAt(row, 3);
+        //        String tinhTrang = tblCTSP.getValueAt(row, 7).toString();
+        //        int soLuongSp = cTRepo.getSlLon(bia, loaiSP, tinhTrang);
+        //        JOptionPane.showMessageDialog(this, "So luong " + soLuongSp);
+        //        int choice = JOptionPane.showConfirmDialog(this, "Ban chac chan muon tach khong ?", "Warning",
+            //                JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+        //        if (choice == JOptionPane.YES_OPTION) {
+            //            boolean kq = cTRepo.insertList(list);
+            //            if (kq) {
+                //                 boolean kqDelete = cTRepo.delete(ctspExist);
+                //                                System.out.println(kqDelete);
+                //                                loadTable(cTRepo.getAll());
+                //            }
+            //        }
+
+    }//GEN-LAST:event_btnTachActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private swing.ButtonCustom btnClear;
     private swing.ButtonCustom btnSua;
+    private swing.ButtonCustom btnTach;
     private swing.ButtonCustom btnThem;
     private swing.ButtonCustom btnTimKiem;
     private javax.swing.ButtonGroup buttonGroup1;
