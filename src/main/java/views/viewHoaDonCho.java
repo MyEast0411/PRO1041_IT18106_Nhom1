@@ -11,7 +11,9 @@ import java.awt.Desktop;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import repositories.HoaDonRepository;
 import service.ServiceHoaDon;
 import service.ServiceHoaDonChiTiet;
 import service.impl.ServiceHoaDonChiTietImpl;
@@ -233,6 +235,22 @@ public class viewHoaDonCho extends javax.swing.JFrame {
 
     private void btnHuyHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHuyHoaDonActionPerformed
         // TODO add your handling code here:
+        int row = this.tblHoaDon.getSelectedRow();
+        if (row == -1) {
+            ThongBao tb = new ThongBao(this, ThongBao.Type.WARNING, ThongBao.Location.TOP_CENTER, "Bạn chưa chọn hóa đơn muốn hủy");
+            tb.showNotification();
+            return;
+        }
+        String maHD = this.tblHoaDon.getValueAt(row, 1).toString();
+        HoaDon hoaDon = ss.getHoaDonByMa(maHD);
+        System.out.println(hoaDon.getId());
+        hoaDon.setTinhTrang(2);
+        if(ss.update(hoaDon)){
+            JOptionPane.showMessageDialog(this, "Hủy hóa đơn thành công");
+                    this.loadTable();
+        }else {
+            JOptionPane.showMessageDialog(this, "Hủy hóa đơn thất bại");
+        }
     }//GEN-LAST:event_btnHuyHoaDonActionPerformed
 
     /**

@@ -72,6 +72,8 @@ public class HoaDonRepository {
             return null;
         }
     }
+    
+    
 
     public HoaDon getHoaDonByMa(String maHD) {
         try ( Session session = HibernateUtil.getSession()) {
@@ -145,8 +147,8 @@ public class HoaDonRepository {
 //            q.setParameter("thangFrom", thangFrom);
 //            q.setParameter("namTo", namTo);
 //            q.setParameter("namFrom", namFrom);
-              q.setParameter("to", to);
-              q.setParameter("from", from);
+            q.setParameter("to", to);
+            q.setParameter("from", from);
             lst = q.getResultList();
             return lst;
         } catch (Exception e) {
@@ -154,6 +156,7 @@ public class HoaDonRepository {
             return null;
         }
     }
+
     public List<HoaDon> getListHDChuaTT() {
         try ( Session session = HibernateUtil.getSession()) {
             List<HoaDon> list = new ArrayList<>();
@@ -165,7 +168,7 @@ public class HoaDonRepository {
             return null;
         }
     }
-    
+
     public List<HoaDon> getListHD() {
         try ( Session session = HibernateUtil.getSession()) {
             List<HoaDon> list = new ArrayList<>();
@@ -177,15 +180,13 @@ public class HoaDonRepository {
             return null;
         }
     }
+
     public static void main(String[] args) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date to = format.parse("2023-03-10");
-        Date from = format.parse("2023-03-25");
-        System.out.println(to);
-        String batDau = format.format(to);
-        String ketThuc = format.format(from);
-        System.out.println(new HoaDonRepository().insert(new HoaDon()));
-        
+        HoaDon hd = new HoaDonRepository().getHoaDonByMa("HD23480");
+        hd.setTinhTrang(2);
+
+        //System.out.println(new HoaDonRepository().updateTinhTrang(hd));
+
     }
 
 }
