@@ -36,7 +36,6 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         this.loadCbbTenBia();
         this.setDate();
         this.runThreadLoadTableBiaKM();
-
     }
 
     public void runThreadLoadTableBiaKM() {
@@ -397,7 +396,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         jPanel12.setBackground(new java.awt.Color(255, 255, 255));
         jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Danh sách khuyến mại", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Nunito", 1, 14), new java.awt.Color(20, 108, 148))); // NOI18N
 
-        txtSearch.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Tìm kiếm đợt khuyến mại theo tên", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 13), new java.awt.Color(65, 65, 65))); // NOI18N
+        txtSearch.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Tìm kiếm đợt khuyến mại theo tên", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(65, 65, 65))); // NOI18N
         txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtSearchKeyReleased(evt);
@@ -515,7 +514,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         jScrollPane1.setViewportView(tblDotKhuyenMai);
 
         cbbDanhSachKM.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sản phẩm" }));
-        cbbDanhSachKM.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Các đợt khuyến mại đã áp dụng theo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 13), new java.awt.Color(102, 102, 102))); // NOI18N
+        cbbDanhSachKM.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Các đợt khuyến mại đã áp dụng theo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(102, 102, 102))); // NOI18N
         cbbDanhSachKM.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbbDanhSachKMActionPerformed(evt);
@@ -549,7 +548,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         jScrollPane2.setViewportView(tblSanPhamKM);
 
         cbbTenBia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cbbTenBia.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Chọn hãng bia muốn áp dụng KM", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 13), new java.awt.Color(102, 102, 102))); // NOI18N
+        cbbTenBia.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Chọn hãng bia muốn áp dụng KM", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(102, 102, 102))); // NOI18N
 
         jPanel3.setBackground(new java.awt.Color(235, 235, 235));
 
@@ -727,10 +726,13 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
     private void tblSanPhamKMMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSanPhamKMMouseClicked
         // TODO add your handling code here:
         int row = tblSanPhamKM.getSelectedRow();
+        if(row==-1){
+            return;
+        }
         String tenSanPham = (String) tblSanPhamKM.getValueAt(row, 2);
-        String tenDKM = (String) tblSanPhamKM.getValueAt(row, 3);
-        String maDKM = (String) tblSanPhamKM.getValueAt(row, 10);
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xóa tất cả bia có hãng " + tenSanPham + " ra khỏi đợt khuyến mại (" + tenDKM + ") không?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+        String tenDKM = (String) tblSanPhamKM.getValueAt(row, 4);
+        String maDKM = (String) tblSanPhamKM.getValueAt(row, 11);
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xóa tất cả " + tenSanPham + " ra khỏi đợt khuyến mại (" + tenDKM + ") không?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
         if (dialogResult == JOptionPane.YES_OPTION) { // nếu người dùng đồng ý xóa
             serviceDKM.deleteBiaKM(tenSanPham, maDKM);
             loadTableBiaKM();

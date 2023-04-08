@@ -5,6 +5,7 @@
 package application;
 
 import views.TrangChu;
+import views.viewLogin;
 
 /**
  *
@@ -14,6 +15,6 @@ public class Main {
     
     public static void main(String[] args) {
         System.out.println("hello");
-        
+         new viewLogin().setVisible(true);
     }
 }
