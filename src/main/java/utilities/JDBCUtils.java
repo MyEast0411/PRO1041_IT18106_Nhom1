@@ -15,8 +15,8 @@ public class JDBCUtils {
     private static final String DRIVER ="com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private static final String URLPATH = "jdbc:sqlserver://localhost:1433;databaseName=";
     private static final String USER ="sa";
-    private static final String PASS ="0123";
-    private static final String DATABASE ="FINALASS_FPOLYSHOP_FA22_SOF205__SOF2041";
+    private static final String PASS ="123456789aA@";
+    private static final String DATABASE ="DuAn1Nhom1";
     
     public static Connection getConnection(){
         try {

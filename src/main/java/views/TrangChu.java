@@ -20,6 +20,7 @@ import view.viewBanHang;
 import view.viewQLKhachHang;
 import view.viewQLKhuyenMai;
 import view.viewQLNhanVien;
+import view.viewQLSanPham;
 import view.viewThongKe;
 
 /**
@@ -533,7 +534,7 @@ public class TrangChu extends javax.swing.JFrame {
     private void btnQLSPMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQLSPMousePressed
         // TODO add your handling code here:
         pnlRight.removeAll();
-        pnlRight.add(new viewQLKhuyenMai());
+        pnlRight.add(new viewQLSanPham());
         setColor(btnQLSP);
         resetColor(btnQLDKM);
         resetColor(btnQLNV);

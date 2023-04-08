@@ -5,12 +5,13 @@
 package service;
 
 import domainModel.SanPhamChiTiet;
+import model.SanPhamChiTiet_;
 
 /**
  *
  * @author dongl
  */
 public interface ServiceSanPhamChiTiet {
-    SanPhamChiTiet getSPCTByMa(String ma);
-    Boolean updateSoLuong(SanPhamChiTiet x);
+    SanPhamChiTiet_ getSPCTByMa(String ma);
+    Boolean updateSoLuong(SanPhamChiTiet_ x);
 }

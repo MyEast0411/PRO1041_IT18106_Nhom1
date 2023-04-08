@@ -4,7 +4,8 @@
  */
 package service.impl;
 
-import domainModel.SanPhamChiTiet;
+
+import model.SanPhamChiTiet_;
 import repositories.SanPhamChiTietResponsitory;
 import service.ServiceSanPhamChiTiet;
 
@@ -15,12 +16,12 @@ import service.ServiceSanPhamChiTiet;
 public class ServiceSanPhamChiTietImpl implements ServiceSanPhamChiTiet{
     private SanPhamChiTietResponsitory repo = new SanPhamChiTietResponsitory();
     @Override
-    public SanPhamChiTiet getSPCTByMa(String ma) {
+    public SanPhamChiTiet_ getSPCTByMa(String ma) {
         return repo.getSPCTByMa(ma);
     }
 
     @Override
-    public Boolean updateSoLuong(SanPhamChiTiet x) {
+    public Boolean updateSoLuong(SanPhamChiTiet_ x) {
         return repo.updateSoLuong(x);
     }
 
