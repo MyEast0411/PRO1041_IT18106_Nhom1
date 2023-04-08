@@ -95,6 +95,10 @@ public class SPCTRepo {
         return false;
     }
     
+//    public boolean  updateSoLuong(SanPhamChiTiet chiTiet){
+//        
+//    }
+    
     
     public boolean insert(SanPhamChiTiet spct){
         Transaction tran = null;

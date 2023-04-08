@@ -1077,7 +1077,7 @@ public class viewBanHang extends javax.swing.JPanel {
                 Integer soLuong = x.getSoLuong();
                 spct.setSoLuongTon(spct.getSoLuongTon() - soLuong);
                 //Viết hàm giúp tao phát
-              //  ssSPCT.updateSoLuong(spct);
+                ssSPCT.updateSL(spct);
             }
             hd.setTongTien(tt);
             hd.setNgayThanhToan(new Date());
