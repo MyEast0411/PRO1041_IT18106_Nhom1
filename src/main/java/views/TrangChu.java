@@ -16,7 +16,6 @@ import javax.swing.border.LineBorder;
 import swing.ThongBao;
 import view.QuanLyKhachHang;
 import view.ViewQLKH;
-import view.ViewQLVoucher;
 import view.viewBanHang;
 import view.viewQLKhachHang;
 import view.viewQLKhuyenMai;
@@ -782,7 +781,7 @@ public class TrangChu extends javax.swing.JFrame {
     private void btnQLSPMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQLSPMousePressed
         // TODO add your handling code here:
         pnlRight.removeAll();
-        pnlRight.add(new ViewQLVoucher());
+        pnlRight.add(new QuanLyKhachHang());
         setColor(btnQLSP);
         resetColor(btnQLDKM);
         resetColor(btnQLNV);
