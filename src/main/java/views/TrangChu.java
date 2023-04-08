@@ -47,8 +47,6 @@ public class TrangChu extends javax.swing.JFrame {
         nhanVien = nv;
         //btnBanHangMousePressed(evt);
 
-        
-        
     }
 
     /**
@@ -783,7 +781,8 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnQLSPMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQLSPMousePressed
         // TODO add your handling code here:
-
+        pnlRight.removeAll();
+        pnlRight.add(new ViewQLVoucher());
         setColor(btnQLSP);
         resetColor(btnQLDKM);
         resetColor(btnQLNV);
@@ -798,7 +797,6 @@ public class TrangChu extends javax.swing.JFrame {
         ind_icons.setOpaque(false);
         ind_data1.setOpaque(false);
 
-        cardLayout.first(pnlRight);
 
     }//GEN-LAST:event_btnQLSPMousePressed
 
@@ -827,7 +825,7 @@ public class TrangChu extends javax.swing.JFrame {
     private void btnQLKHMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQLKHMousePressed
         // TODO add your handling code here:
         pnlRight.removeAll();
-        pnlRight.add(new viewQLKhachHang());
+        
         setColor(btnQLKH);
         resetColor(btnQLDKM);
         resetColor(btnQLNV);
@@ -841,7 +839,8 @@ public class TrangChu extends javax.swing.JFrame {
         ind_fonts.setOpaque(false);
         ind_icons.setOpaque(true);
         ind_data1.setOpaque(false);
-
+        pnlQLKH.add(new QuanLyKhachHang());
+        pnlRight.add(pnlQLKH);
 
     }//GEN-LAST:event_btnQLKHMousePressed
 
