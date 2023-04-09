@@ -32,8 +32,8 @@ public class NhanVienRepository {
         }
         return null;
     }
-    
-    public Boolean insert(NhanVien nv){
+
+    public Boolean insert(NhanVien nv) {
         try {
             Session session = ss.getSession();
             session.getTransaction().begin();
@@ -45,15 +45,15 @@ public class NhanVienRepository {
         }
         return null;
     }
-    
-    public Boolean update(NhanVien nv,String maNV){
+
+    public Boolean update(NhanVien nv, String maNV) {
         try {
             Session session = ss.getSession();
             String hql = "SELECT nv FROM NhanVien nv where nv.ma = :ma";
             Query q = session.createQuery(hql);
             q.setParameter("ma", maNV);
             NhanVien nhanVien = (NhanVien) q.getSingleResult();
-            
+
             nhanVien.setChucVu(nv.getChucVu());
             nhanVien.setDiaChi(nv.getDiaChi());
             nhanVien.setEmail(nv.getEmail());
@@ -64,7 +64,7 @@ public class NhanVienRepository {
             nhanVien.setSdt(nv.getSdt());
             nhanVien.setTenDangNhap(nv.getTenDangNhap());
             nhanVien.setTrangThaiLamViec(nv.getTrangThaiLamViec());
-            
+
             session.getTransaction().begin();
             session.update(nhanVien);
             session.getTransaction().commit();
@@ -74,20 +74,38 @@ public class NhanVienRepository {
             return null;
         }
     }
-    public NhanVien getNhanVienByMa(String maNV){
+
+    public NhanVien getNhanVienByMa(String maNV) {
         try {
             Session session = ss.getSession();
             String hql = "SELECT nv FROM NhanVien nv where nv.ma = :ma";
             Query q = session.createQuery(hql);
             q.setParameter("ma", maNV);
             NhanVien nv = (NhanVien) q.getSingleResult();
+            session.close();
             return nv;
         } catch (Exception e) {
             System.out.println("hi");
             return null;
         }
     }
-    public List<NhanVien> getListByTT(Integer tt){
+
+    public NhanVien getNhanVienByTenDN(String text) {
+        try {
+            Session session = ss.getSession();
+            String hql = "SELECT nv FROM NhanVien nv where nv.tenDangNhap = :ma";
+            Query q = session.createQuery(hql);
+            q.setParameter("ma", text);
+            NhanVien nv = (NhanVien) q.getSingleResult();
+            session.close();
+            return nv;
+        } catch (Exception e) {
+            System.out.println("hi");
+            return null;
+        }
+    }
+
+    public List<NhanVien> getListByTT(Integer tt) {
         try {
             List<NhanVien> list = new ArrayList<>();
             Session session = ss.getSession();
@@ -100,19 +118,21 @@ public class NhanVienRepository {
             return null;
         }
     }
-    public List<NhanVien> getListByTen(String ten){
+
+    public List<NhanVien> getListByTen(String ten) {
         try {
             List<NhanVien> list = new ArrayList<>();
             Session session = ss.getSession();
             String hql = "SELECT nv FROM NhanVien nv where nv.hoTen like :ten";
             Query q = session.createQuery(hql);
-            q.setParameter("ten", "%"+ten+"%");
+            q.setParameter("ten", "%" + ten + "%");
             list = q.getResultList();
             return list;
         } catch (Exception e) {
             return null;
         }
     }
+
     public static void main(String[] args) {
         NhanVienRepository repo = new NhanVienRepository();
 //        NhanVien nv = new NhanVien(null, "NV001", "quachdong", "Quách Đông", 1, "0964457125", "Đan Phượng", "donglun0411@gmail.com", "donglun", 1, 1);

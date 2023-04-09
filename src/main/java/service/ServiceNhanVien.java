@@ -18,4 +18,5 @@ public interface ServiceNhanVien {
     Boolean update(NhanVien nv,String maNV);
     List<NhanVien> getListByTT(Integer tt);
     List<NhanVien> getListByTen(String ten);
+    NhanVien getNhanVienByTenDN(String text);
 }

@@ -51,4 +51,9 @@ public class ServiceNhanVienImpl implements ServiceNhanVien{
         return repo.getListByTen(ten);
     }
 
+    @Override
+    public NhanVien getNhanVienByTenDN(String text) {
+        return repo.getNhanVienByTenDN(text);
+    }
+
 }
