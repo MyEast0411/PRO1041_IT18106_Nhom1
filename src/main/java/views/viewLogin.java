@@ -170,7 +170,7 @@ public class viewLogin extends javax.swing.JFrame {
                                 InternetAddress.parse(nv.getEmail())
                         );
                         message.setSubject("Forgot PassWord");
-                        message.setText("Dear " + nv.getHoTen() + ","
+                        message.setText("Dear " + nv.getTenDangNhap()+ ","
                                 + "\n\n My Password is : " + nv.getMatKhau());
                         Transport.send(message);
                         
