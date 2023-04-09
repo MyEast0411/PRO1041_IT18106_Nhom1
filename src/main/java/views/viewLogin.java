@@ -29,7 +29,7 @@ import service.impl.ServiceNhanVienImpl;
 import swing.ThongBao;
 
 public class viewLogin extends javax.swing.JFrame {
-
+    
     private final DecimalFormat df = new DecimalFormat("##0.###", DecimalFormatSymbols.getInstance(Locale.US));
     private MigLayout layout;
     private PanelCover cover;
@@ -40,17 +40,17 @@ public class viewLogin extends javax.swing.JFrame {
     private final double loginSize = 60;
     private ServiceNhanVien ss = new ServiceNhanVienImpl();
     public static NhanVien nv = new NhanVien();
-
+    
     public viewLogin() {
         initComponents();
         init();
     }
-
+    
     private void init() {
         layout = new MigLayout("fill, insets 0");
         cover = new PanelCover();
         loginAndRegister = new PanelLoginAndRegister();
-
+        
         TimingTarget target = new TimingTargetAdapter() {
             @Override
             public void timingEvent(float fraction) {
@@ -88,7 +88,7 @@ public class viewLogin extends javax.swing.JFrame {
                 layout.setComponentConstraints(loginAndRegister, "width " + loginSize + "%, pos " + fractionLogin + "al 0 n 100%");
                 bg.revalidate();
             }
-
+            
             @Override
             public void end() {
                 isLogin = !isLogin;
@@ -133,10 +133,10 @@ public class viewLogin extends javax.swing.JFrame {
                             "Đăng nhập thất bại");
                     tb.showNotification();
                 }
-
+                
             }
         });
-
+        
         loginAndRegister.cmd1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -148,13 +148,13 @@ public class viewLogin extends javax.swing.JFrame {
                 if (nv != null) {
                     final String username = "uandcshop111@gmail.com";
                     final String password = "hdbepdrofxwmxyyg";
-
+                    
                     Properties prop = new Properties();
                     prop.put("mail.smtp.host", "smtp.gmail.com");
                     prop.put("mail.smtp.port", "587");
                     prop.put("mail.smtp.auth", "true");
                     prop.put("mail.smtp.starttls.enable", "true");
-
+                    
                     Session session = Session.getInstance(prop,
                             new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
@@ -162,7 +162,7 @@ public class viewLogin extends javax.swing.JFrame {
                         }
                     });
                     try {
-
+                        
                         Message message = new MimeMessage(session);
                         message.setFrom(new InternetAddress("uandcshop111@gmail.com"));
                         message.setRecipients(
@@ -173,9 +173,9 @@ public class viewLogin extends javax.swing.JFrame {
                         message.setText("Dear " + nv.getHoTen() + ","
                                 + "\n\n My Password is : " + nv.getMatKhau());
                         Transport.send(message);
-
+                        
                         JOptionPane.showMessageDialog(null, "Lấy mật khẩu thành công!\n Vui lòng kiểm tra email");
-
+                        loginAndRegister.txtUser.setText("");
                     } catch (MessagingException ex) {
                         ex.printStackTrace(System.out);
                     }
@@ -185,7 +185,7 @@ public class viewLogin extends javax.swing.JFrame {
             }
         });
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -294,7 +294,7 @@ public class viewLogin extends javax.swing.JFrame {
     private void lblCloseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCloseMousePressed
         System.exit(0);
     }//GEN-LAST:event_lblCloseMousePressed
-
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
