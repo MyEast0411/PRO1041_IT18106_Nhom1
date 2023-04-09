@@ -165,7 +165,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         String mucKMString = txtMucKM.getText();
         try {
             double mucKM = Double.parseDouble(mucKMString);
-            String selected = cbbDanhSachKM.getSelectedItem().toString();
+            String selected = cbbLoaiKM.getSelectedItem().toString();
             Date ngayBatDau = txtNgayBatDau.getDate();
             Date ngayKetThuc = txtNgayKetThuc.getDate();
 
@@ -726,7 +726,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
     private void tblSanPhamKMMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSanPhamKMMouseClicked
         // TODO add your handling code here:
         int row = tblSanPhamKM.getSelectedRow();
-        if(row==-1){
+        if (row == -1) {
             return;
         }
         String tenSanPham = (String) tblSanPhamKM.getValueAt(row, 2);
@@ -746,13 +746,13 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
 
     private void cbbDanhSachKMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbbDanhSachKMActionPerformed
         // TODO add your handling code here:
-        String selected = cbbDanhSachKM.getSelectedItem().toString();
+//        String selected = cbbDanhSachKM.getSelectedItem().toString();
         loadTableBiaKM();
-        if (selected.equals("Khách hàng")) {
-            loadTableKhachHangKM();
-        } else if (selected.equals("Nhà sản xuất")) {
-            loadTableNSXKM();
-        }
+//        if (selected.equals("Khách hàng")) {
+//            loadTableKhachHangKM();
+//        } else if (selected.equals("Nhà sản xuất")) {
+//            loadTableNSXKM();
+//        }
     }//GEN-LAST:event_cbbDanhSachKMActionPerformed
 
     private void tblDotKhuyenMaiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDotKhuyenMaiMouseClicked
@@ -940,6 +940,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         // TODO add your handling code here:
         int row = this.tblDotKhuyenMai.getSelectedRow();
         if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Chọn một đợt khuyến mại để sửa");
             return;
         }
         if (validateForm()) {
@@ -993,25 +994,17 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         List<BiaKhuyenMai> list = serviceDKM.getListBiaKhuyenMai();
         for (BiaKhuyenMai spkm : list) {
-            //update trạng thái theo ngày hiện tại
-            if (serviceDKM.updateTTBiaKM(spkm.getChiTietSanPham(), spkm.getKhuyenMai())) {
-                System.out.println("Updated Trang thai.");
+              Date currentDate = new Date();
+            String trangThai;
+            if (currentDate.after(spkm.getKhuyenMai().getNgayBatDau()) && currentDate.before(spkm.getKhuyenMai().getNgayKetThuc())) {
+                trangThai = "Đang diễn ra";
+            } else if (currentDate.before(spkm.getKhuyenMai().getNgayBatDau())) {
+                trangThai = "Chưa diễn ra";
+            } else if (currentDate.after(spkm.getKhuyenMai().getNgayKetThuc())) {
+                trangThai = "Đã kết thúc";
             } else {
-                System.out.println("Update failed trang thai.");
+                trangThai = "";
             }
-
-            //set trạng thái
-            String trangThai = "";
-            trangThai = switch (spkm.getTrangThai()) {
-                case 2 ->
-                    "Chưa diễn ra";
-                case 1 ->
-                    "Đang diễn ra";
-                case 0 ->
-                    "Đã kết thúc";
-                default ->
-                    "";
-            };
             BigDecimal giaCu = spkm.getDonGia();
             float giaTriPhanTram = spkm.getKhuyenMai().getGiaTriPhanTram();
             BigDecimal giaTriTienMat = spkm.getKhuyenMai().getGiaTriTienMat();
@@ -1066,25 +1059,17 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         List<BiaKhuyenMai> list = serviceDKM.getListBiaKhuyenMai();
         for (BiaKhuyenMai spkm : list) {
-            //update trạng thái theo ngày hiện tại
-            if (serviceDKM.updateTTBiaKM(spkm.getChiTietSanPham(), spkm.getKhuyenMai())) {
-                System.out.println("Updated Trang thai.");
+              Date currentDate = new Date();
+            String trangThai;
+            if (currentDate.after(spkm.getKhuyenMai().getNgayBatDau()) && currentDate.before(spkm.getKhuyenMai().getNgayKetThuc())) {
+                trangThai = "Đang diễn ra";
+            } else if (currentDate.before(spkm.getKhuyenMai().getNgayBatDau())) {
+                trangThai = "Chưa diễn ra";
+            } else if (currentDate.after(spkm.getKhuyenMai().getNgayKetThuc())) {
+                trangThai = "Đã kết thúc";
             } else {
-                System.out.println("Update failed trang thai.");
+                trangThai = "";
             }
-
-            //set trạng thái
-            String trangThai = "";
-            trangThai = switch (spkm.getTrangThai()) {
-                case 2 ->
-                    "Chưa diễn ra";
-                case 1 ->
-                    "Đang diễn ra";
-                case 0 ->
-                    "Đã kết thúc";
-                default ->
-                    "";
-            };
             BigDecimal giaCu = spkm.getDonGia();
             float giaTriPhanTram = spkm.getKhuyenMai().getGiaTriPhanTram();
             BigDecimal giaTriTienMat = spkm.getKhuyenMai().getGiaTriTienMat();
@@ -1131,40 +1116,6 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         tcm.getColumn(tcm.getColumnIndex("Trạng thái")).setMinWidth(70);
     }
 
-    public void loadTableKhachHangKM() {
-        dtm = (DefaultTableModel) tblSanPhamKM.getModel();
-        dtm.setRowCount(0);
-        String[] columnNames = {"STT", "Mã KH", "Họ tên", "Ngày bắt đầu", "Ngày kết thúc"};
-        dtm.setColumnIdentifiers(columnNames);
-        int stt = 1;
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-//        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        List<KhachHangKhuyenMai> list = serviceDKM.getListKhachHangKhuyenMai();
-        for (KhachHangKhuyenMai khkm : list) {
-            dtm.addRow(new Object[]{
-                stt++,
-                khkm.getKhachHang().getMa(),
-                khkm.getKhachHang().getHoTen(),
-                formatter.format(khkm.getKhuyenMai().getNgayBatDau()),
-                formatter.format(khkm.getKhuyenMai().getNgayKetThuc()),});
-        }
-    }
-
-    public void loadTableNSXKM() {
-        dtm = (DefaultTableModel) tblSanPhamKM.getModel();
-        dtm.setRowCount(0);
-        int stt = 1;
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        List<NSXKhuyenMai> list = serviceDKM.getListNSXKhuyenMai();
-        for (NSXKhuyenMai ncckm : list) {
-            dtm.addRow(new Object[]{
-                stt++,
-                ncckm.getNsx().getMa(),
-                ncckm.getNsx().getTen(),
-                decimalFormat.format(ncckm.getDonGia()),
-                decimalFormat.format(ncckm.getGiaConLai()),});
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private swing.ButtonCustom btnApDungKM;

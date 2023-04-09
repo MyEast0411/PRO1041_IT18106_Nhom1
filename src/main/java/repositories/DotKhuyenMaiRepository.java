@@ -79,24 +79,6 @@ public class DotKhuyenMaiRepository {
         return list;
     }
 
-    public List<KhachHangKhuyenMai> getListKhachHangKhuyenMai() {
-        List<KhachHangKhuyenMai> list = new ArrayList<>();
-        Session s = HibernateUtil.getSession();
-        Query q = s.createQuery("FROM KhachHangKhuyenMai");
-        list = q.getResultList();
-        s.close();
-        return list;
-    }
-
-    public List<NSXKhuyenMai> getListNSXKhuyenMai() {
-        List<NSXKhuyenMai> list = new ArrayList<>();
-        Session s = HibernateUtil.getSession();
-        Query q = s.createQuery("FROM NSXKhuyenMai");
-        list = q.getResultList();
-        s.close();
-        return list;
-    }
-
     public Boolean insert(DotKhuyenMai x) {
         try ( Session s = HibernateUtil.getSession();) {
             s.getTransaction().begin();
@@ -344,14 +326,20 @@ public class DotKhuyenMaiRepository {
             s.getTransaction().begin();
             Query query = s.createQuery("update BiaKhuyenMai set trangThai = "
                     + "(case when :currentDate between (select km.ngayBatDau from DotKhuyenMai km where km.id = :idDotKhuyenMai) "
-                    + "and (select km.ngayKetThuc from DotKhuyenMai km where km.id = :idDotKhuyenMai) then 1 "
-                    + "when :currentDate < (select km.ngayBatDau from DotKhuyenMai km where km.id = :idDotKhuyenMai) then 2 else 0 end) "
+                    + "and (select km.ngayKetThuc from DotKhuyenMai km where km.id = :idDotKhuyenMai) then 0 "
+                    + "when :currentDate < (select km.ngayBatDau from DotKhuyenMai km where km.id = :idDotKhuyenMai) then 2 else 1 end) "
                     + "where chiTietSanPham.id = :idSanPhamChiTiet and khuyenMai.id = :idDotKhuyenMai");
 
             query.setParameter("currentDate", new Date());
             query.setParameter("idSanPhamChiTiet", sp.getId());
             query.setParameter("idDotKhuyenMai", km.getId());
+            System.out.println("Query: " + query.getQueryString());
+            
+            System.out.println("currentDate: " + new Date());
+            System.out.println("idSanPhamChiTiet: " + sp.getId());
+            System.out.println("idDotKhuyenMai: " + km.getId());
             int result = query.executeUpdate();
+            System.out.println("Rows updated: " + result);
             s.getTransaction().commit();
             return result > 0;
         } catch (Exception e) {

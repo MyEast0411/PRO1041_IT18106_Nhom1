@@ -29,10 +29,6 @@ public interface ServiceDotKhuyenMai {
 
     List<BiaKhuyenMai> getListBiaKhuyenMai();
 
-    List<KhachHangKhuyenMai> getListKhachHangKhuyenMai();
-
-    List<NSXKhuyenMai> getListNSXKhuyenMai();
-
     List<SanPhamChiTiet> findByTenSanPham(String tenSanPham);
 
     List<Bia> getListBia();

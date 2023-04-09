@@ -46,16 +46,6 @@ public class ServiceDotKhuyenMaiImpl implements ServiceDotKhuyenMai {
     }
 
     @Override
-    public List<KhachHangKhuyenMai> getListKhachHangKhuyenMai() {
-        return DKMRepo.getListKhachHangKhuyenMai();
-    }
-
-    @Override
-    public List<NSXKhuyenMai> getListNSXKhuyenMai() {
-        return DKMRepo.getListNSXKhuyenMai();
-    }
-
-    @Override
     public boolean deleteMany(Date startDate, Date endDate) {
         return DKMRepo.deleteMany(startDate, endDate);
     }
