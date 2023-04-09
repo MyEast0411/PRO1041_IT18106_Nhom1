@@ -18,4 +18,5 @@ public interface ServiceKhachHang<T> {
     List<T> getAll();
     void writeExcel(List<T> list,String[] nameColumn,String nameSheet,String nameFile);
     List<T> importExcel();
+    
 }

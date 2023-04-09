@@ -5,7 +5,7 @@
 package viewmodel;
 
 import java.math.BigDecimal;
-import java.util.Date;
+
 
 /**
  *
@@ -14,11 +14,8 @@ import java.util.Date;
 public class SPCTBiaNsxLoaiSp {
     private String maSP;
     private String tenSP;
-    //
     private String loaiSP;
-    //
     private String nsx;
-    //
     private String maSPCT;
     private String theTich;
      private String nongDoCon;

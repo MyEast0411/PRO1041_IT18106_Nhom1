@@ -11,6 +11,7 @@ import repositories.KhachHangRepository;
 import service.ServiceKhachHang;
 import utilities.Ex_Im_ExcelKH;
 import viewmodel.HoaDonViewModel;
+import viewmodel.KhachHangView;
 import viewmodel.SPHDViewModel;
 
 /**
@@ -67,5 +68,17 @@ private Ex_Im_ExcelKH eekh;
     public List<SPHDViewModel> getSPCTByMaHD(String ma){
         return hangRepository.getHDCTByMaHD(ma);
     }
+    
+    public List<KhachHangView> getLoad(){
+        return hangRepository.getLoadTableByMoneyASC();
+    }
+    public List<KhachHangView> getLoadCBB(){
+        return hangRepository.getLoadTableByMoneyDESC();
+    }
+    public List<KhachHangView> getKHBySDT(String sdt){
+        return hangRepository.getKHbySDT(sdt);
+    }
+    
+    
     
 }

@@ -7,6 +7,7 @@ package repositories;
 import domainModel.HoaDon;
 import domainModel.HoaDonChiTiet;
 import domainModel.KhachHang;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +17,7 @@ import javax.persistence.TypedQuery;
 import org.hibernate.Session;
 import utilities.HibernateUtil;
 import viewmodel.HoaDonViewModel;
+import viewmodel.KhachHangView;
 import viewmodel.SPHDViewModel;
 
 /**
@@ -129,7 +131,7 @@ public class KhachHangRepository {
         }
 
     }
-
+    
     public List<HoaDonViewModel> getHDByMaKh(String ma) {
 //              maHD,
 //                maNV,
@@ -169,11 +171,83 @@ public class KhachHangRepository {
         return list.isEmpty() ? new ArrayList<>() : list;
     }
 
+    public List<KhachHangView> getLoadTableByMoneyDESC() {
+        String hql = "SELECT new viewmodel.KhachHangView("
+                + " a.ma ,"
+                + " a.hoTen,"
+                + "a.diaChi ,"
+                + "a.gioiTinh,"
+                + "a.sdt,"
+                + " Sum(b.tongTien)) "
+                + "FROM KhachHang a inner join HoaDon b\n"
+                + "on a.id = b.khachHang.id \n"
+                + "group by  a.ma ,  a.hoTen, a.diaChi , a.gioiTinh , a.sdt\n"
+                + "order by Sum(b.tongTien) desc ";
+        List<KhachHangView> list = new ArrayList<>();
+        try ( Session ss = HibernateUtil.getSession()) {
+            Query query = ss.createQuery(hql);
+            list = query.getResultList();
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public List<KhachHangView> getLoadTableByMoneyASC() {
+        String hql = "SELECT new viewmodel.KhachHangView("
+                + " a.ma ,"
+                + " a.hoTen,"
+                + "a.diaChi ,"
+                + "a.gioiTinh,"
+                + "a.sdt,"
+                + " Sum(b.tongTien)) "
+                + "FROM KhachHang a inner join HoaDon b\n"
+                + "on a.id = b.khachHang.id \n"
+                + "group by  a.ma ,  a.hoTen, a.diaChi , a.gioiTinh , a.sdt\n"
+                + "order by Sum(b.tongTien) asc ";
+        List<KhachHangView> list = new ArrayList<>();
+        try ( Session ss = HibernateUtil.getSession()) {
+            Query query = ss.createQuery(hql);
+            list = query.getResultList();
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public List<KhachHangView> getKHbySDT(String sdt) {
+        String hql = "SELECT new viewmodel.KhachHangView("
+                + " a.ma ,"
+                + " a.hoTen,"
+                + "a.diaChi ,"
+                + "a.gioiTinh,"
+                + "a.sdt,"
+                + " Sum(b.tongTien)) "
+                + "FROM KhachHang a inner join HoaDon b\n"
+                + "on a.id = b.khachHang.id\n "
+                + "where a.sdt like :sdt\n"
+                + "group by  a.ma ,  a.hoTen, a.diaChi , a.gioiTinh , a.sdt\n"
+                + "order by Sum(b.tongTien) desc ";
+        List<KhachHangView> list = new ArrayList<>();
+        try ( Session ss = HibernateUtil.getSession()) {
+            Query query = ss.createQuery(hql);
+            query.setParameter("sdt","%" +sdt+"%");
+            list = query.getResultList();
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         KhachHangRepository khr = new KhachHangRepository();
+        System.out.println(khr.getLoadTableByMoneyDESC().size());
         //HD001
 //             String ma = "maHD ,maNV,Ten NV , ngayThanhToan=2023-03-12 00:00:00.0, hinhThucThanhToan=1, tongTien=20000.0000, tienMat=20000.0000, tienChuyenKhoan=0.0000)";
-        khr.getHDCTByMaHD("HD001").forEach(s -> System.out.println(s.toString()));
+        khr.getLoadTableByMoneyDESC().forEach(s -> System.out.println(s.toString()));
+        
+
     }
 
 }
