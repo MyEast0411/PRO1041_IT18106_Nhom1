@@ -8,6 +8,7 @@ import application.Main;
 import domainModel.HoaDon;
 import domainModel.HoaDonChiTiet;
 import java.awt.Desktop;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import javax.swing.table.DefaultTableModel;
@@ -33,13 +34,29 @@ public class viewLichSu extends javax.swing.JFrame {
     Integer stt = 1;
     TrangChu trangChu = new TrangChu(null);
     DecimalFormat df = new DecimalFormat("#,###");
+    DefaultTableModel dtm = new DefaultTableModel();
 
     public viewLichSu() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.loadTable();
+        dtm = (DefaultTableModel) this.tblHoaDon.getModel();
+        dtm.setRowCount(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+        int stt = 1;
+        String[] columnNames = {"STT", "Mã hóa đơn", "Ngày thanh toán", "Số lượng sản phẩm", "Tình trạng"};
+        dtm.setColumnIdentifiers(columnNames);
+        for (HoaDon hd : ss.getListHdDaTT()) {
+            Integer soLuong = 0;
+            for (HoaDonChiTiet x : ssHDCT.getListByMaHD(hd.getMa())) {
+                soLuong += x.getSoLuong();
+            }
+            dtm.addRow(new Object[]{
+                stt++, hd.getMa(), format.format(hd.getNgayThanhToan()), soLuong, "Đã thanh toán"
+            });
+        }
     }
-    
+
     public void loadHoaDon(HoaDon hd) {
         viewBanHang x = new viewBanHang(null);
         int soThuTu = 1;
@@ -50,8 +67,31 @@ public class viewLichSu extends javax.swing.JFrame {
         x.txtTenKH.setText(hd.getKhachHang() == null ? "" : hd.getKhachHang().getHoTen());
         x.txtNgayTao.setText(format.format(hd.getNgayTao()));
         //x.txtNgayThanhToan.setText(format.format(hd.getNgayThanhToan()));
+
+        if (hd.getHinhThucThanhToan() != null) {
+            //0 là tiền mặt
+            if (hd.getHinhThucThanhToan() == 0) {
+                x.cboHTTT.setSelectedIndex(0);
+                x.txtChuyenKhoan.setText("");
+                x.txtTienMat.setText(df.format(hd.getTienMat() == null ? new BigDecimal(0) : hd.getTienMat()));
+            } else if (hd.getHinhThucThanhToan() == 1) { //1 là chuyển khoản
+                x.cboHTTT.setSelectedIndex(1);
+                x.txtTienMat.setText("");
+                x.txtChuyenKhoan.setText(df.format(hd.getTienChuyenKhoan() == null ? new BigDecimal(0) : hd.getTienChuyenKhoan()));
+            } else if (hd.getHinhThucThanhToan() == 2) { //2 là kết hợp
+                x.cboHTTT.setSelectedIndex(2);
+                x.txtChuyenKhoan.setText(df.format(hd.getTienChuyenKhoan() == null ? new BigDecimal(0) : hd.getTienChuyenKhoan()));
+                x.txtTienMat.setText(df.format(hd.getTienMat() == null ? new BigDecimal(0) : hd.getTienMat()));
+            } else {
+                x.txtTienMat.setText("");
+                x.txtChuyenKhoan.setText("");
+            }
+        } else {
+
+        }
+
         x.lblNhanVien.setText(hd.getNhanVien().getHoTen());
-        
+
         x.dtm = (DefaultTableModel) x.tblHoaDon.getModel();
         x.dtm.setRowCount(0);
         for (HoaDonChiTiet hdct : ssHDCT.getListByMaHD(hd.getMa())) {
@@ -92,8 +132,8 @@ public class viewLichSu extends javax.swing.JFrame {
         tblHoaDon = new javax.swing.JTable();
         btnXacNhan = new swing.ButtonCustom();
         jLabel1 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        rdoDaTT = new javax.swing.JRadioButton();
+        rdoDaHuy = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -139,17 +179,22 @@ public class viewLichSu extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("Danh sách hóa đơn ");
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Đã thanh toán");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(rdoDaTT);
+        rdoDaTT.setSelected(true);
+        rdoDaTT.setText("Đã thanh toán");
+        rdoDaTT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
+                rdoDaTTActionPerformed(evt);
             }
         });
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("Đã hủy");
+        buttonGroup1.add(rdoDaHuy);
+        rdoDaHuy.setText("Đã hủy");
+        rdoDaHuy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdoDaHuyActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -166,9 +211,9 @@ public class viewLichSu extends javax.swing.JFrame {
                             .addComponent(jLabel1)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 799, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jRadioButton1)
+                                .addComponent(rdoDaTT)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jRadioButton2)))
+                                .addComponent(rdoDaHuy)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -179,8 +224,8 @@ public class viewLichSu extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
+                    .addComponent(rdoDaTT)
+                    .addComponent(rdoDaHuy))
                 .addGap(10, 10, 10)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -203,7 +248,7 @@ public class viewLichSu extends javax.swing.JFrame {
         String maHD = this.tblHoaDon.getValueAt(row, 1).toString();
         hd = ss.getHoaDonByMa(maHD);
         this.loadHoaDon(hd);
-        
+
         this.setVisible(false);
 
 //        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -236,9 +281,43 @@ public class viewLichSu extends javax.swing.JFrame {
 //        this.setVisible(false);
     }//GEN-LAST:event_tblHoaDonMouseClicked
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+    private void rdoDaTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoDaTTActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+        dtm = (DefaultTableModel) this.tblHoaDon.getModel();
+        dtm.setRowCount(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+        int stt = 1;
+        String[] columnNames = {"STT", "Mã hóa đơn", "Ngày thanh toán", "Số lượng sản phẩm", "Tình trạng"};
+        dtm.setColumnIdentifiers(columnNames);
+        for (HoaDon hd : ss.getListHdDaTT()) {
+            Integer soLuong = 0;
+            for (HoaDonChiTiet x : ssHDCT.getListByMaHD(hd.getMa())) {
+                soLuong += x.getSoLuong();
+            }
+            dtm.addRow(new Object[]{
+                stt++, hd.getMa(), format.format(hd.getNgayThanhToan()), soLuong, "Đã thanh toán"
+            });
+        }
+    }//GEN-LAST:event_rdoDaTTActionPerformed
+
+    private void rdoDaHuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoDaHuyActionPerformed
+        // TODO add your handling code here:
+        dtm = (DefaultTableModel) this.tblHoaDon.getModel();
+        dtm.setRowCount(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+        int stt = 1;
+        String[] columnNames = {"STT", "Mã hóa đơn", "Ngày tạo", "Số lượng sản phẩm", "Tình trạng"};
+        dtm.setColumnIdentifiers(columnNames);
+        for (HoaDon hd : ss.getListHdDaHuy()) {
+            Integer soLuong = 0;
+            for (HoaDonChiTiet x : ssHDCT.getListByMaHD(hd.getMa())) {
+                soLuong += x.getSoLuong();
+            }
+            dtm.addRow(new Object[]{
+                stt++, hd.getMa(), format.format(hd.getNgayTao()), soLuong, "Đã hủy"
+            });
+        }
+    }//GEN-LAST:event_rdoDaHuyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -280,9 +359,9 @@ public class viewLichSu extends javax.swing.JFrame {
     private swing.ButtonCustom btnXacNhan;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JRadioButton rdoDaHuy;
+    private javax.swing.JRadioButton rdoDaTT;
     private javax.swing.JTable tblHoaDon;
     // End of variables declaration//GEN-END:variables
 }

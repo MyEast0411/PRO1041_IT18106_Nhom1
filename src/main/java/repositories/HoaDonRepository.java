@@ -169,10 +169,22 @@ public class HoaDonRepository {
         }
     }
 
-    public List<HoaDon> getListHD() {
+    public List<HoaDon> getListHdDaTT() {
         try ( Session session = HibernateUtil.getSession()) {
             List<HoaDon> list = new ArrayList<>();
-            String hql = "SELECT hd FROM HoaDon hd where hd.tinhTrang = 1 or hd.tinhTrang = 2";
+            String hql = "SELECT hd FROM HoaDon hd where hd.tinhTrang = 1";
+            Query q = session.createQuery(hql);
+            list = q.getResultList();
+            return list;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public List<HoaDon> getListHdDaHuy() {
+        try ( Session session = HibernateUtil.getSession()) {
+            List<HoaDon> list = new ArrayList<>();
+            String hql = "SELECT hd FROM HoaDon hd where hd.tinhTrang = 2";
             Query q = session.createQuery(hql);
             list = q.getResultList();
             return list;

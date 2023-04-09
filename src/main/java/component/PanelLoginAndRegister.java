@@ -68,7 +68,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         txtPass.setPrefixIcon(new ImageIcon(getClass().getResource("/com/raven/icon/pass.png")));
         txtPass.setHint("Password");
         login.add(txtPass, "w 60%");
-        JButton cmdForget = new JButton("Forgot your password ?");
+        JButton cmdForget = new JButton("");
         cmdForget.setForeground(new Color(100, 100, 100));
         cmdForget.setFont(new Font("sansserif", 1, 12));
         cmdForget.setContentAreaFilled(false);

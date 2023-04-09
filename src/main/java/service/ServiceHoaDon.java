@@ -22,5 +22,6 @@ public interface ServiceHoaDon {
     List<HoaDon> getListByNam(Integer ngay);
     List<HoaDon> getListByTime(Date to,Date from);
     List<HoaDon> getListHDChuaTT();
-    List<HoaDon> getListHD();
+    List<HoaDon> getListHdDaTT();
+    List<HoaDon> getListHdDaHuy();
 }

@@ -69,8 +69,14 @@ public class ServiceHoaDonImpl implements ServiceHoaDon{
     }
 
     @Override
-    public List<HoaDon> getListHD() {
-        return repo.getListHD();
+    public List<HoaDon> getListHdDaTT() {
+        return repo.getListHdDaTT();
     }
+
+    @Override
+    public List<HoaDon> getListHdDaHuy() {
+        return repo.getListHdDaHuy();
+    }
+
     
 }

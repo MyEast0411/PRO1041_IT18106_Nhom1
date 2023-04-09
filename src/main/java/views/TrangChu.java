@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import swing.ThongBao;
@@ -43,7 +44,7 @@ public class TrangChu extends javax.swing.JFrame {
         lblTitle.setText("Phần mềm bán bia đóng sẵn");
         cardLayout = (CardLayout) pnlRight.getLayout();
         String hoTen = viewLogin.nv.getHoTen();
-        //this.lblTenNhanVien.setText("Xin chào : "+hoTen.substring(hoTen.lastIndexOf(" ")));
+        this.lblTenNhanVien.setText("Xin chào : "+hoTen.substring(hoTen.lastIndexOf(" ")));
         nhanVien = nv;
         //btnBanHangMousePressed(evt);
 
@@ -357,6 +358,11 @@ public class TrangChu extends javax.swing.JFrame {
         jLabel20.setForeground(new java.awt.Color(204, 204, 204));
         jLabel20.setText("Đăng xuất");
         jLabel20.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel20.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel20MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout sidepaneLayout = new javax.swing.GroupLayout(sidepane);
         sidepane.setLayout(sidepaneLayout);
@@ -576,22 +582,6 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnQLKHMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQLKHMousePressed
         // TODO add your handling code here:
-//        pnlRight.removeAll();
-//        pnlQLKH.add(new QuanLyKhachHang());
-//        pnlRight.add(pnlQLKH);
-//        setColor(btnQLKH);
-//        resetColor(btnQLDKM);
-//        resetColor(btnQLNV);
-//        resetColor(btnQLSP);
-//        resetColor(btnThongKe);
-//        resetColor(btnBanHang);
-//
-//        ind_typo.setOpaque(false);
-//        ind_typo1.setOpaque(false);
-//        ind_data.setOpaque(false);
-//        ind_fonts.setOpaque(false);
-//        ind_icons.setOpaque(true);
-//        ind_data1.setOpaque(false);
         
         pnlRight.removeAll();
         pnlRight.add(new QuanLyKhachHang());
@@ -689,6 +679,17 @@ public class TrangChu extends javax.swing.JFrame {
         ind_fonts.setOpaque(false);
         ind_icons.setOpaque(false);
     }//GEN-LAST:event_btnBanHangMousePressed
+
+    private void jLabel20MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel20MouseClicked
+        // TODO add your handling code here:
+        int choice = JOptionPane.showConfirmDialog(this, "Bạn có muốn đăng xuất không?", "Đăng xuất", JOptionPane.YES_NO_OPTION);
+        if(choice != JOptionPane.YES_OPTION){
+            return;
+        }
+        new viewLogin().setVisible(true);
+        this.setVisible(false);
+        JOptionPane.showMessageDialog(this, "Đăng xuất thành công");
+    }//GEN-LAST:event_jLabel20MouseClicked
 
     // set and reset color
     void setColor(JPanel panel) {

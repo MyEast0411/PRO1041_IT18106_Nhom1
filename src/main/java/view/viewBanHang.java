@@ -38,6 +38,7 @@ import service.impl.ServiceNhanVienImpl;
 import service.impl.ServiceSanPhamChiTietImpl;
 import utilities.ExportFilePdf;
 import views.viewHoaDonCho;
+import views.viewLichSu;
 import views.viewLogin;
 
 /**
@@ -51,7 +52,7 @@ public class viewBanHang extends javax.swing.JPanel {
      */
     private ServiceHoaDon ssHD = new ServiceHoaDonImpl();
     private ServiceHoaDonChiTiet ssHDCT = new ServiceHoaDonChiTietImpl();
-   // private ServiceSanPhamChiTiet ssSPCT = new ServiceSanPhamChiTietImpl();
+    // private ServiceSanPhamChiTiet ssSPCT = new ServiceSanPhamChiTietImpl();
     private SPCTRepo ssSPCT = new SPCTRepo();
     public DefaultTableModel dtm = new DefaultTableModel();
     private Integer stt = 1;
@@ -155,7 +156,6 @@ public class viewBanHang extends javax.swing.JPanel {
                 tienChuyenKhoan = Double.valueOf(txtChuyenKhoan.getText().trim());
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Tiền chuyển khoản phải là số");
                 return;
             }
             this.txtTienThua.setText(df.format(BigDecimal.valueOf(tienChuyenKhoan).subtract(tt)) + "");
@@ -164,7 +164,6 @@ public class viewBanHang extends javax.swing.JPanel {
                 tienMat = Double.valueOf(txtTienMat.getText().trim());
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Tiền mặt phải là số");
                 return;
             }
             this.txtTienThua.setText(df.format(BigDecimal.valueOf(tienMat).subtract(tt)) + "");
@@ -174,7 +173,7 @@ public class viewBanHang extends javax.swing.JPanel {
                 tienMat = Double.valueOf(txtTienMat.getText().trim());
 
             } catch (Exception e) {
-                
+
                 return;
             }
             tienKhachDua = tienMat + tienChuyenKhoan;
@@ -285,6 +284,11 @@ public class viewBanHang extends javax.swing.JPanel {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Hóa Đơn"));
+        jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel1MouseClicked(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel1.setText("Mã HĐ :");
@@ -824,6 +828,19 @@ public class viewBanHang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnHDChoActionPerformed
 
     private void btnTreoHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTreoHDActionPerformed
+        if(this.lblMaHD.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn nào");
+            return;
+        }
+        String maHD = this.lblMaHD.getText().trim();
+        if (ssHD.getHoaDonByMa(maHD).getTinhTrang() == 1) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
+            return;
+        }
+        if (ssHD.getHoaDonByMa(maHD).getTinhTrang() == 2) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã hủy");
+            return;
+        }
         if (txtSDT.getText().trim().length() == 0) {
             this.clearHoaDon();
             return;
@@ -886,6 +903,14 @@ public class viewBanHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn");
             return;
         }
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 1) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
+            return;
+        }
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 2) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã hủy");
+            return;
+        }
         stt = 1;
         ServiceSanPhamChiTiet ss = new ServiceSanPhamChiTietImpl();
         String maSP = txtMa.getText().trim();
@@ -901,7 +926,7 @@ public class viewBanHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Số lượng phải nhập số");
             return;
         }
-        SanPhamChiTiet spct =  ssSPCT.findByMa(maSP);
+        SanPhamChiTiet spct = ssSPCT.findByMa(maSP);
         HoaDon hd = ssHD.getHoaDonByMa(maHD);
         HoaDonChiTiet hdct = new HoaDonChiTiet();
         hdct.setSoLuong(soLuong);
@@ -971,6 +996,19 @@ public class viewBanHang extends javax.swing.JPanel {
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
         // TODO add your handling code here:
+        if (lblMaHD.getText().trim().length() == 0) {
+            JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn");
+            return;
+        }
+ 
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 1) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
+            return;
+        }
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 2) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã hủy");
+            return;
+        }
         if (txtMa.getText().trim().length() == 0) {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn sản phẩm muốn xóa");
             return;
@@ -999,6 +1037,19 @@ public class viewBanHang extends javax.swing.JPanel {
 
     private void btnXoaAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaAllActionPerformed
         // TODO add your handling code here:
+        if (lblMaHD.getText().trim().length() == 0) {
+            JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn");
+            return;
+        }
+ 
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 1) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
+            return;
+        }
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 2) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã hủy");
+            return;
+        }
         if (lblMaHD.getText().trim().length() == 0) {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn muốn xóa");
             return;
@@ -1034,7 +1085,7 @@ public class viewBanHang extends javax.swing.JPanel {
             tienKhachDua = Double.valueOf(txtChuyenKhoan.getText().trim());
         } catch (Exception e) {
             this.txtChuyenKhoan.requestFocus();
-            JOptionPane.showMessageDialog(this, "Tiền khách đưa phải là số");
+            //JOptionPane.showMessageDialog(this, "Tiền chuyển khoản phải là số");
             return;
         }
 //        BigDecimal tienThua = new BigDecimal(tienKhachDua).subtract(tt);
@@ -1048,29 +1099,88 @@ public class viewBanHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn muốn thanh toán!");
             return;
         }
+ 
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 1) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
+            return;
+        }
+        if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 2) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn đã hủy");
+            return;
+        }
+        String maHD = this.lblMaHD.getText().trim();
+        HoaDon hd = ssHD.getHoaDonByMa(maHD);
+        Integer httt = 0;
         Double tienThua = null;
         Double tienChuyenKhoan = null;
         Double tienMat = null;
-        try {
-            tienThua = Double.valueOf(this.txtTienThua.getText().trim().replace(",", ""));
-            tienChuyenKhoan = Double.valueOf(txtChuyenKhoan.getText().trim());
-            tienMat = Double.valueOf(txtTienMat.getText().trim());
-            if (tienThua < 0) {
-                JOptionPane.showMessageDialog(this, "Khách hàng chưa trả đủ tiền");
+//        try {
+//            tienThua = Double.valueOf(this.txtTienThua.getText().trim().replace(",", ""));
+//            tienChuyenKhoan = Double.valueOf(txtChuyenKhoan.getText().trim());
+//            tienMat = Double.valueOf(txtTienMat.getText().trim());
+//            if (tienThua < 0) {
+//                JOptionPane.showMessageDialog(this, "Khách hàng chưa trả đủ tiền");
+//                return;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Tiền khách đưa phải là số");
+//            return;
+//        }
+        //Set hình thức thanh toán
+        if (this.cboHTTT.getSelectedItem().toString().equals("Tiền mặt")) {
+            httt = 0;
+            try {
+                tienThua = Double.valueOf(this.txtTienThua.getText().trim().replace(",", ""));
+                tienMat = Double.valueOf(txtTienMat.getText().trim());
+                if (tienThua < 0) {
+                    JOptionPane.showMessageDialog(this, "Khách hàng chưa trả đủ tiền");
+                    return;
+                }
+                hd.setTienMat(BigDecimal.valueOf(tienMat));
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Tiền mặt phải là số");
                 return;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Tiền khách đưa phải là số");
-            return;
+        } else if (this.cboHTTT.getSelectedItem().toString().equals("Chuyển khoản")) {
+            httt = 1;
+            try {
+                tienThua = Double.valueOf(this.txtTienThua.getText().trim().replace(",", ""));
+                tienChuyenKhoan = Double.valueOf(txtChuyenKhoan.getText().trim());
+                if (tienThua < 0) {
+                    JOptionPane.showMessageDialog(this, "Khách hàng chưa trả đủ tiền");
+                    return;
+                }
+                hd.setTienChuyenKhoan(BigDecimal.valueOf(tienChuyenKhoan));
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Tiền chuyển khoản phải là số");
+                return;
+            }
+        } else {
+            httt = 2;
+            try {
+                tienThua = Double.valueOf(this.txtTienThua.getText().trim().replace(",", ""));
+                tienChuyenKhoan = Double.valueOf(txtChuyenKhoan.getText().trim());
+                tienMat = Double.valueOf(txtTienMat.getText().trim());
+                if (tienThua < 0) {
+                    JOptionPane.showMessageDialog(this, "Khách hàng chưa trả đủ tiền");
+                    return;
+                }
+                hd.setTienMat(BigDecimal.valueOf(tienMat));
+                hd.setTienChuyenKhoan(BigDecimal.valueOf(tienChuyenKhoan));
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Tiền khách đưa phải là số");
+                return;
+            }
         }
-
         //đổi trạng thái hóa đơn thành đã thanh toán 
         //trừ số lượng tồn trong spct
         try {
             BigDecimal tongTien = new BigDecimal(0);
-            String maHD = this.lblMaHD.getText().trim();
-            HoaDon hd = ssHD.getHoaDonByMa(maHD);
+
             hd.setTinhTrang(1);
             for (HoaDonChiTiet x : ssHDCT.getListByMaHD(maHD)) {
                 SanPhamChiTiet spct = x.getIdChiTietSanPham();
@@ -1081,9 +1191,9 @@ public class viewBanHang extends javax.swing.JPanel {
             }
             hd.setTongTien(tt);
             hd.setNgayThanhToan(new Date());
-            hd.setTienMat(BigDecimal.valueOf(tienMat));
-            hd.setTienChuyenKhoan(BigDecimal.valueOf(tienChuyenKhoan));
-            System.out.println(hd.getTinhTrang());
+//            hd.setTienMat(BigDecimal.valueOf(tienMat));
+//            hd.setTienChuyenKhoan(BigDecimal.valueOf(tienChuyenKhoan));
+            hd.setHinhThucThanhToan(httt);
             ssHD.update(hd);
 
             JOptionPane.showMessageDialog(this, "Thanh toán thành công");
@@ -1102,7 +1212,7 @@ public class viewBanHang extends javax.swing.JPanel {
 
     private void btnLichSuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLichSuActionPerformed
         // TODO add your handling code here:
-        
+        new viewLichSu().setVisible(true);
     }//GEN-LAST:event_btnLichSuActionPerformed
 
     private void txtTenKHCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtTenKHCaretUpdate
@@ -1124,7 +1234,7 @@ public class viewBanHang extends javax.swing.JPanel {
             tienKhachDua = Double.valueOf(txtTienMat.getText().trim());
         } catch (Exception e) {
             this.txtTienMat.requestFocus();
-            JOptionPane.showMessageDialog(this, "Tiền khách đưa phải là số");
+            //JOptionPane.showMessageDialog(this, "Tiền mặt phải là số");
             return;
         }
 //        BigDecimal tienThua = new BigDecimal(tienKhachDua).subtract(tt);
@@ -1154,6 +1264,15 @@ public class viewBanHang extends javax.swing.JPanel {
 
     }//GEN-LAST:event_cboHTTTItemStateChanged
 
+    private void jPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseClicked
+        // TODO add your handling code here:
+        String maHD = this.lblMaHD.getText().trim();
+        HoaDon hd = ssHD.getHoaDonByMa(maHD);
+        if (hd.getTinhTrang() != 0) {
+            return;
+        }
+    }//GEN-LAST:event_jPanel1MouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private swing.ButtonCustom btnHDCho;
@@ -1166,7 +1285,7 @@ public class viewBanHang extends javax.swing.JPanel {
     private swing.ButtonCustom btnTreoHD;
     private swing.ButtonCustom btnXoa;
     private swing.ButtonCustom btnXoaAll;
-    private javax.swing.JComboBox<String> cboHTTT;
+    public javax.swing.JComboBox<String> cboHTTT;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;

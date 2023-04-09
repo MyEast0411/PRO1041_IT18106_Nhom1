@@ -43,7 +43,7 @@ public class HibernateUtil {
         properties.put(Environment.DRIVER, "com.microsoft.sqlserver.jdbc.SQLServerDriver");
         properties.put(Environment.URL, "jdbc:sqlserver://localhost:1433;databaseName=DuAn1Nhom1;trustServerCertificate=true;");
         properties.put(Environment.USER, "sa");
-        properties.put(Environment.PASS, "123456789aA@");
+        properties.put(Environment.PASS, "0123");
         properties.put(Environment.SHOW_SQL, "true");
         
         //gen db -- bỏ cmt rồi chạy 1 lần 
