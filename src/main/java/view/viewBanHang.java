@@ -828,7 +828,7 @@ public class viewBanHang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnHDChoActionPerformed
 
     private void btnTreoHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTreoHDActionPerformed
-        if(this.lblMaHD.getText().trim().length() == 0){
+        if (this.lblMaHD.getText().trim().length() == 0) {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn nào");
             return;
         }
@@ -1000,7 +1000,7 @@ public class viewBanHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn");
             return;
         }
- 
+
         if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 1) {
             JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
             return;
@@ -1041,7 +1041,7 @@ public class viewBanHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn");
             return;
         }
- 
+
         if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 1) {
             JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
             return;
@@ -1099,7 +1099,7 @@ public class viewBanHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn muốn thanh toán!");
             return;
         }
- 
+
         if (ssHD.getHoaDonByMa(lblMaHD.getText()).getTinhTrang() == 1) {
             JOptionPane.showMessageDialog(this, "Hóa đơn đã thanh toán");
             return;
@@ -1249,15 +1249,18 @@ public class viewBanHang extends javax.swing.JPanel {
         if (text.equals("Tiền mặt")) {
             this.txtTienMat.setEnabled(true);
             this.txtChuyenKhoan.setEnabled(false);
+            this.txtTienThua.setText("");
             this.txtChuyenKhoan.setText("");
         } else if (text.equals("Chuyển khoản")) {
             this.txtTienMat.setEnabled(false);
             this.txtChuyenKhoan.setEnabled(true);
+            this.txtTienThua.setText("");
             this.txtTienMat.setText("");
         } else {
             this.txtChuyenKhoan.setEnabled(true);
             this.txtTienMat.setEnabled(true);
             this.txtTienMat.setText("");
+            this.txtTienThua.setText("");
             this.txtChuyenKhoan.setText("");
         }
 
