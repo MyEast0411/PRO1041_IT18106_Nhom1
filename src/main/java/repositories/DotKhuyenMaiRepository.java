@@ -280,6 +280,7 @@ public class DotKhuyenMaiRepository {
             query.setParameter("km", km);
             List<BiaKhuyenMai> biaKMList = query.list();
             if (!biaKMList.isEmpty()) {
+                 JOptionPane.showMessageDialog(null, "Một đợt khuyến mại không thể áp dụng hai lần cho cùng một sản phẩm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return false;
             }
             // Apply the promotion to the product
@@ -321,32 +322,44 @@ public class DotKhuyenMaiRepository {
         }
     }
 
-    public boolean updateTTBiaKM(SanPhamChiTiet sp, DotKhuyenMai km) {
-        try ( Session s = HibernateUtil.getSession()) {
-            s.getTransaction().begin();
-            Query query = s.createQuery("update BiaKhuyenMai set trangThai = "
-                    + "(case when :currentDate between (select km.ngayBatDau from DotKhuyenMai km where km.id = :idDotKhuyenMai) "
-                    + "and (select km.ngayKetThuc from DotKhuyenMai km where km.id = :idDotKhuyenMai) then 0 "
-                    + "when :currentDate < (select km.ngayBatDau from DotKhuyenMai km where km.id = :idDotKhuyenMai) then 2 else 1 end) "
-                    + "where chiTietSanPham.id = :idSanPhamChiTiet and khuyenMai.id = :idDotKhuyenMai");
+    public Boolean updateTTBiaKM() {
+        try ( Session session = HibernateUtil.getSession()) {
+            session.getTransaction().begin();
 
-            query.setParameter("currentDate", new Date());
-            query.setParameter("idSanPhamChiTiet", sp.getId());
-            query.setParameter("idDotKhuyenMai", km.getId());
-            System.out.println("Query: " + query.getQueryString());
-            
-            System.out.println("currentDate: " + new Date());
-            System.out.println("idSanPhamChiTiet: " + sp.getId());
-            System.out.println("idDotKhuyenMai: " + km.getId());
-            int result = query.executeUpdate();
-            System.out.println("Rows updated: " + result);
-            s.getTransaction().commit();
-            return result > 0;
+            // Lấy danh sách bia khuyen mai
+            List<BiaKhuyenMai> list = session.createQuery("FROM BiaKhuyenMai").list();
+
+            // Lặp qua danh sách để cập nhật trạng thái
+            Date currentDate = new Date();
+            for (BiaKhuyenMai biaKhuyenMai : list) {
+                DotKhuyenMai khuyenMai = biaKhuyenMai.getKhuyenMai();
+
+                // Kiểm tra trạng thái khuyến mại
+                if (currentDate.after(khuyenMai.getNgayBatDau()) && currentDate.before(khuyenMai.getNgayKetThuc())) {
+                    biaKhuyenMai.setTrangThai(1);
+                } else if (currentDate.before(khuyenMai.getNgayBatDau())) {
+                    biaKhuyenMai.setTrangThai(2);
+                } else if (currentDate.after(khuyenMai.getNgayKetThuc())) {
+                    biaKhuyenMai.setTrangThai(0);
+                }
+
+                // Cập nhật lại bia khuyen mai
+                session.update(biaKhuyenMai);
+            }
+            List<BiaKhuyenMai> updatedList = session.createQuery("FROM BiaKhuyenMai").list();
+            for (BiaKhuyenMai updatedBiaKhuyenMai : updatedList) {
+                System.out.println(updatedBiaKhuyenMai.getTrangThai());
+            }
+
+            session.flush();
+            session.clear();
+
+            session.getTransaction().commit();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-
     }
 
     public boolean checkBiaKhuyenMai(SanPhamChiTiet spct, DotKhuyenMai dotKM) {

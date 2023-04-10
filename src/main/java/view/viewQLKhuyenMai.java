@@ -813,7 +813,10 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
                 if (dotKM.getNgayKetThuc().after(currentDate)) {
                     checkDate = true;
                 }
-                if (serviceDKM.apDungKM(spct, dotKM) && checkDate) {
+                if (checkDate == false) {
+                    JOptionPane.showMessageDialog(this, "Đợt khuyến mại đã kết thúc.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                    return;
+                } else if (serviceDKM.apDungKM(spct, dotKM) && checkDate) {
                     isSuccess = true;
                 }
             }
@@ -823,8 +826,6 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         if (isSuccess) {
             JOptionPane.showMessageDialog(this, "Áp dụng thành công");
             loadTableBiaKM();
-        } else {
-            JOptionPane.showMessageDialog(null, "Đợt khuyến mại đã kết thúc hoặc được áp dụng 2 lần", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnApDungKMActionPerformed
 
@@ -994,7 +995,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         List<BiaKhuyenMai> list = serviceDKM.getListBiaKhuyenMai();
         for (BiaKhuyenMai spkm : list) {
-              Date currentDate = new Date();
+            Date currentDate = new Date();
             String trangThai;
             if (currentDate.after(spkm.getKhuyenMai().getNgayBatDau()) && currentDate.before(spkm.getKhuyenMai().getNgayKetThuc())) {
                 trangThai = "Đang diễn ra";
@@ -1009,8 +1010,8 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
             float giaTriPhanTram = spkm.getKhuyenMai().getGiaTriPhanTram();
             BigDecimal giaTriTienMat = spkm.getKhuyenMai().getGiaTriTienMat();
             BigDecimal mucGiaSauKhiGiam = giaCu.subtract(giaCu.multiply(BigDecimal.valueOf(giaTriPhanTram / 100))).subtract(giaTriTienMat);
-            if (spkm.getTrangThai() == 1) {
-                // tính giá còn lại
+            if (trangThai.equals("Đang diễn ra")) {
+                // Update cột giá còn lại khi đợt khuyến mại đang diễn ra
                 if (serviceDKM.updateGiaConLaiBiaKM(spkm, mucGiaSauKhiGiam)) {
                     System.out.println("Updated gia_con_lai.");
                 } else {
@@ -1036,6 +1037,9 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
                 spkm.getKhuyenMai().getMa()
             });
         }
+        if (serviceDKM.updateTTBiaKM()) {//update trạng thái xuống database
+            System.out.println("Update Trang thai thanh cong");
+        }
         // ẩn cột Mã DKM
         TableColumnModel tcm = tblSanPhamKM.getColumnModel();
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMinWidth(0);
@@ -1059,7 +1063,7 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         List<BiaKhuyenMai> list = serviceDKM.getListBiaKhuyenMai();
         for (BiaKhuyenMai spkm : list) {
-              Date currentDate = new Date();
+            Date currentDate = new Date();
             String trangThai;
             if (currentDate.after(spkm.getKhuyenMai().getNgayBatDau()) && currentDate.before(spkm.getKhuyenMai().getNgayKetThuc())) {
                 trangThai = "Đang diễn ra";
@@ -1074,8 +1078,8 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
             float giaTriPhanTram = spkm.getKhuyenMai().getGiaTriPhanTram();
             BigDecimal giaTriTienMat = spkm.getKhuyenMai().getGiaTriTienMat();
             BigDecimal mucGiaSauKhiGiam = giaCu.subtract(giaCu.multiply(BigDecimal.valueOf(giaTriPhanTram / 100))).subtract(giaTriTienMat);
-            if (spkm.getTrangThai() == 1) {
-                // tính giá còn lại
+            if (trangThai.equals("Đang diễn ra")) {
+                // Update cột giá còn lại khi đợt khuyến mại đang diễn ra
                 if (serviceDKM.updateGiaConLaiBiaKM(spkm, mucGiaSauKhiGiam)) {
                     System.out.println("Updated gia_con_lai.");
                 } else {
@@ -1101,6 +1105,9 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
                     trangThai,
                     spkm.getKhuyenMai().getMa()
                 });
+            }
+            if (serviceDKM.updateTTBiaKM()) {//update trạng thái xuống database
+                System.out.println("Update Trang thai thanh cong");
             }
         }
         // ẩn cột Mã DKM

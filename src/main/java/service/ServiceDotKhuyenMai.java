@@ -53,7 +53,7 @@ public interface ServiceDotKhuyenMai {
 
     boolean deleteBiaKM(String tenSanPham, String maDotKhuyenMai);
 
-    boolean updateTTBiaKM(SanPhamChiTiet sp, DotKhuyenMai km);
+    boolean updateTTBiaKM();
 
     boolean updateGiaConLaiBiaKM(BiaKhuyenMai biaKhuyenMai, BigDecimal giaConLai);
 

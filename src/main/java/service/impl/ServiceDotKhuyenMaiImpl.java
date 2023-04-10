@@ -106,8 +106,8 @@ public class ServiceDotKhuyenMaiImpl implements ServiceDotKhuyenMai {
     }
 
     @Override
-    public boolean updateTTBiaKM(SanPhamChiTiet sp, DotKhuyenMai km) {
-        return DKMRepo.updateTTBiaKM(sp, km);
+    public boolean updateTTBiaKM() {
+        return DKMRepo.updateTTBiaKM();
     }
 
     @Override
