@@ -56,6 +56,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import service.ServiceDotKhuyenMai;
 import service.impl.ServiceDotKhuyenMaiImpl;
+import view.ScanQRCode.QRCodeScanCallback;
 
 /**
  *
@@ -1284,7 +1285,6 @@ public class viewBanHang extends javax.swing.JPanel {
 
 
     }//GEN-LAST:event_cboHTTTItemStateChanged
-
     private void jPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseClicked
         // TODO add your handling code here:
         String maHD = this.lblMaHD.getText().trim();
@@ -1296,26 +1296,31 @@ public class viewBanHang extends javax.swing.JPanel {
     private void btnScanLineCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnScanLineCodeActionPerformed
         // TODO add your handling code here:
         ScanQRCode qrCodeScanner = new ScanQRCode();
+        qrCodeScanner.setCallback(new QRCodeScanCallback() {
+            @Override
+            public void onScanCompleted(String result) {
+                System.out.println("Print o view-maSP: " + result);
+                SanPhamChiTiet sp = serviceDKM.findByMa(result);
+                if (sp != null) {
+                    txtMa.setText(sp.getMa());
+                    txtTenSP.setText(sp.getBia().getTen());
+                    System.out.println(sp.getBia().getTen());
+                    txtLoaiSP.setText(sp.getLoaiSP().getTen());
+                    txtTheTich.setText(sp.getTheTich());
+                    txtTrangThai.setText(sp.getTrangThai() == 1 ? "Thùng" : "Lon");
+                    txtNongDo.setText(sp.getNongDoCon());
+                    txtGiaBan.setText(df.format(sp.getGiaBan()) + "");
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy mã sản phẩm này");
+                    return;
+                }
+            }
+        });
         qrCodeScanner.setVisible(true);
-        
-        String maSP = qrCodeScanner.getText();
 
-        System.out.println("Print o view-maSP: " + maSP);
-        SanPhamChiTiet spct = serviceDKM.findByMa(maSP);
-        if (spct == null) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy mã sản phẩm này");
-            return;
-        }
 
-        this.txtMa.setText(spct.getMa());
-        this.txtTenSP.setText(spct.getBia().getTen());
-        this.txtLoaiSP.setText(spct.getLoaiSP().getTen());
-        this.txtTheTich.setText(spct.getTheTich());
-        this.txtTrangThai.setText(spct.getTrangThai() == 1 ? "Thùng" : "Lon");
-        this.txtNongDo.setText(spct.getNongDoCon());
-        this.txtGiaBan.setText(df.format(spct.getGiaBan()) + "");
     }//GEN-LAST:event_btnScanLineCodeActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private swing.ButtonCustom btnHDCho;

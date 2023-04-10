@@ -124,6 +124,9 @@ public class ScanQRCode extends javax.swing.JFrame implements Runnable, ThreadFa
                 System.out.println(result.getText());
                 webcam.close();
                 this.setVisible(false);
+                if (callback != null) {
+                    callback.onScanCompleted(result.getText());
+                }
                 Thread.currentThread().stop();
             }
 
@@ -138,6 +141,16 @@ public class ScanQRCode extends javax.swing.JFrame implements Runnable, ThreadFa
     public Thread newThread(Runnable r) {
         Thread t1 = new Thread(r, "MyThread");
         return t1;
+    }
+
+    public interface QRCodeScanCallback {
+
+        void onScanCompleted(String result);
+    }
+    private QRCodeScanCallback callback;
+
+    public void setCallback(QRCodeScanCallback callback) {
+        this.callback = callback;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
