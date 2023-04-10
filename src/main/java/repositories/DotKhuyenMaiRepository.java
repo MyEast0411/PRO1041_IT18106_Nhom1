@@ -59,6 +59,24 @@ public class DotKhuyenMaiRepository {
         }
         return list;
     }
+    
+    public List<DotKhuyenMai> getDKMByDate(Date date) {
+        List<DotKhuyenMai> list = new ArrayList<>();
+        try ( Session s = HibernateUtil.getSession()) {
+            String hql = "FROM DotKhuyenMai";
+            if (date != null) {
+                hql += " WHERE ngayBatDau <= :date AND ngayKetThuc >= :date";
+            }
+            Query q = s.createQuery(hql);
+            if (date != null) {
+                q.setParameter("date", date);
+            }
+            return q.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public List<SanPhamChiTiet> getListSPCT() {
         List<SanPhamChiTiet> list = new ArrayList<>();
@@ -390,5 +408,31 @@ public class DotKhuyenMaiRepository {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public BiaKhuyenMai getBiaKhuyenMai(SanPhamChiTiet spct , DotKhuyenMai km) {
+        List<SanPhamChiTiet> list = new ArrayList<>();
+        try ( Session s = HibernateUtil.getSession()) {
+            String hql = "SELECT x FROM BiaKhuyenMai x where x.khuyenMai.id = :id and"
+                    + " x.chiTietSanPham.id = :idSPCT and x.trangThai = 1";
+            Query q = s.createQuery(hql);
+            q.setParameter("id", km.getId());
+            q.setParameter("idSPCT", spct.getId());
+            return (BiaKhuyenMai) q.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static void main(String[] args) {
+        
+        SanPhamChiTiet spct = new SanPhamChiTiet();
+        DotKhuyenMai km = new DotKhuyenMai();
+        spct.setId(UUID.fromString("4e4c4b1e-116b-6e41-bef6-743ec6c9ad6f"));
+        km.setId(UUID.fromString("cff389ac-e5d4-4bdc-8839-5c773ad21704"));
+        System.out.println(new DotKhuyenMaiRepository().getBiaKhuyenMai(spct, km).getGiaConLai());
+//        for (DotKhuyenMai dotKhuyenMai : new DotKhuyenMaiRepository().getDKMByDate(new Date())) {
+//            System.out.println(dotKhuyenMai.getId());
+//        }
     }
 }

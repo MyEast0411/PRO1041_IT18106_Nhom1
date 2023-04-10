@@ -115,5 +115,15 @@ public class ServiceDotKhuyenMaiImpl implements ServiceDotKhuyenMai {
         return DKMRepo.updateGiaConLaiBiaKM(biaKhuyenMai, giaConLai);
     }
 
+    @Override
+    public BiaKhuyenMai getBiaKhuyenMai(SanPhamChiTiet spct, DotKhuyenMai km) {
+        return DKMRepo.getBiaKhuyenMai(spct, km);
+    }
+
+    @Override
+    public List<DotKhuyenMai> getDKMByDate(Date date) {
+        return DKMRepo.getDKMByDate(date);
+    }
+
 
 }

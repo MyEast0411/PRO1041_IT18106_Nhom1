@@ -49,7 +49,11 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import domainModel.BiaKhuyenMai;
+import domainModel.DotKhuyenMai;
 import java.awt.image.BufferedImage;
+import service.ServiceDotKhuyenMai;
+import service.impl.ServiceDotKhuyenMaiImpl;
 
 /**
  *
@@ -62,6 +66,7 @@ public class viewBanHang extends javax.swing.JPanel {
      */
     private ServiceHoaDon ssHD = new ServiceHoaDonImpl();
     private ServiceHoaDonChiTiet ssHDCT = new ServiceHoaDonChiTietImpl();
+    private ServiceDotKhuyenMai ssDKM = new ServiceDotKhuyenMaiImpl();
     // private ServiceSanPhamChiTiet ssSPCT = new ServiceSanPhamChiTietImpl();
     private SPCTRepo ssSPCT = new SPCTRepo();
     public DefaultTableModel dtm = new DefaultTableModel();
@@ -82,11 +87,17 @@ public class viewBanHang extends javax.swing.JPanel {
     public void loadTable(List<HoaDonChiTiet> list) {
         dtm = (DefaultTableModel) this.tblHoaDon.getModel();
         dtm.setRowCount(0);
+        BigDecimal donGia = new BigDecimal(0);
         for (HoaDonChiTiet x : list) {
+            if(x.getIdChiTietSanPham().getTrangThai() == 0){
+                donGia = x.getDonGia();
+            }else {
+                donGia = x.getDonGia().multiply(new BigDecimal(24));
+            }
             dtm.addRow(new Object[]{
                 stt++, x.getIdChiTietSanPham().getMa(), x.getIdChiTietSanPham().getBia().getTen(), x.getIdChiTietSanPham().getLoaiSP().getTen(),
                 x.getIdChiTietSanPham().getTheTich(), x.getIdChiTietSanPham().getNongDoCon(), x.getIdChiTietSanPham().getTrangThai() == 0 ? "Lon" : "Thùng",
-                x.getSoLuong(), df.format(x.getDonGia())
+                x.getSoLuong(), df.format(donGia)
             });
         }
     }
@@ -143,9 +154,14 @@ public class viewBanHang extends javax.swing.JPanel {
         if (lblMaHD.getText().trim().length() == 0) {
             return;
         }
-
+        BigDecimal donGia = new BigDecimal(0);
         for (HoaDonChiTiet x : ssHDCT.getListByMaHD(lblMaHD.getText())) {
-            tt = tt.add(x.getDonGia().multiply(BigDecimal.valueOf(x.getSoLuong())));
+            if(x.getIdChiTietSanPham().getTrangThai() == 0){
+                donGia = x.getDonGia();
+            }else {
+                donGia = x.getDonGia().multiply(new BigDecimal(24));
+            }
+            tt = tt.add(donGia);
         }
         this.lblTongTien.setText(df.format(tt) + " VNĐ");
     }
@@ -894,13 +910,26 @@ public class viewBanHang extends javax.swing.JPanel {
         if (txtTimKiem.getText().trim().length() == 0) {
             return;
         }
+        BiaKhuyenMai biaKM = new BiaKhuyenMai();
         String maSP = txtTimKiem.getText().trim();
         SanPhamChiTiet spct = ssSPCT.findByMa(maSP);
+        Date date = new Date();
+        List<DotKhuyenMai> km = ssDKM.getDKMByDate(date);
+        System.out.println(spct.getId());
+        System.out.println(km.size());
+        for (DotKhuyenMai dotKhuyenMai : km) {
+            System.out.println(dotKhuyenMai.getId());
+            if(ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai)!=null){
+                biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                System.out.println(biaKM.getGiaConLai());
+                spct.setGiaBan(biaKM.getGiaConLai());
+            }
+        }
         if (spct == null) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy mã sản phẩm này");
             return;
         }
-
+        
         this.txtMa.setText(spct.getMa());
         this.txtTenSP.setText(spct.getBia().getTen());
         this.txtLoaiSP.setText(spct.getLoaiSP().getTen());
@@ -941,6 +970,17 @@ public class viewBanHang extends javax.swing.JPanel {
             return;
         }
         SanPhamChiTiet spct = ssSPCT.findByMa(maSP);
+        BiaKhuyenMai biaKM = new BiaKhuyenMai();
+        Date date = new Date();
+        List<DotKhuyenMai> km = ssDKM.getDKMByDate(date);
+        for (DotKhuyenMai dotKhuyenMai : km) {
+            System.out.println(dotKhuyenMai.getId());
+            if(ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai)!=null){
+                biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                System.out.println(biaKM.getGiaConLai());
+                spct.setGiaBan(biaKM.getGiaConLai());
+            }
+        }
         HoaDon hd = ssHD.getHoaDonByMa(maHD);
         HoaDonChiTiet hdct = new HoaDonChiTiet();
         hdct.setSoLuong(soLuong);
@@ -948,6 +988,7 @@ public class viewBanHang extends javax.swing.JPanel {
         hdct.setIdChiTietSanPham(spct);
         hdct.setDonGia(spct.getGiaBan().multiply(new BigDecimal(soLuong)));
         if (btnThemVaoHD.getText().trim().equals("Cập nhật")) {
+            stt = 1;
             for (HoaDonChiTiet hoaDonChiTiet : ssHDCT.getListByMaHD(maHD)) {
                 if (hoaDonChiTiet.getIdChiTietSanPham().getId().equals(hdct.getIdChiTietSanPham().getId())) {
                     ssHDCT.update(hdct);
@@ -997,11 +1038,22 @@ public class viewBanHang extends javax.swing.JPanel {
         }
         String ma = this.tblHoaDon.getValueAt(row, 1).toString();
         SanPhamChiTiet spct = ssSPCT.findByMa(ma);
+        BiaKhuyenMai biaKM = new BiaKhuyenMai();
+        Date date = new Date();
+        List<DotKhuyenMai> km = ssDKM.getDKMByDate(date);
+        for (DotKhuyenMai dotKhuyenMai : km) {
+            System.out.println(dotKhuyenMai.getId());
+            if(ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai)!=null){
+                biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                System.out.println(biaKM.getGiaConLai());
+                spct.setGiaBan(biaKM.getGiaConLai());
+            }
+        }
         this.txtMa.setText(spct.getMa());
         this.txtTenSP.setText(spct.getBia().getTen());
         this.txtLoaiSP.setText(spct.getLoaiSP().getTen());
         this.txtTheTich.setText(spct.getTheTich());
-        this.txtTrangThai.setText(spct.getTrangThai() == 1 ? "Thùng" : "Lon");
+        this.txtTrangThai.setText(spct.getTrangThai() == 0 ? "Lon" : "Thùng");
         this.txtNongDo.setText(spct.getNongDoCon());
         this.txtGiaBan.setText(df.format(spct.getGiaBan()) + "");
         this.txtSoLuong.setText(tblHoaDon.getValueAt(row, 7).toString());
@@ -1305,7 +1357,7 @@ public class viewBanHang extends javax.swing.JPanel {
         JFrame frame = new JFrame("Scan LineCode");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(500, 400);
-
+        frame.setLocationRelativeTo(null);
         // Tạo đối tượng của lớp WebcamPanel để hiển thị camera
         WebcamPanel panel = new WebcamPanel(webcam);
         panel.setFPSDisplayed(true);
@@ -1320,8 +1372,8 @@ public class viewBanHang extends javax.swing.JPanel {
         frame.setVisible(true);
         while (true) {
             // Đọc hình ảnh từ Webcam
-            BufferedImage image = panel.getImage();
-
+            BufferedImage image =  panel.getImage();
+            System.out.println("hello");
             // Quét mã QR từ hình ảnh
             Result result = null;
             try {
@@ -1337,6 +1389,7 @@ public class viewBanHang extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, qrCode, "QR Code Result", JOptionPane.INFORMATION_MESSAGE);
                 break;
             }
+
         }
         // Đóng JFrame
         frame.dispose();
