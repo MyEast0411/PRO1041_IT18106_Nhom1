@@ -29,10 +29,6 @@ public interface ServiceDotKhuyenMai {
 
     List<BiaKhuyenMai> getListBiaKhuyenMai();
 
-    List<KhachHangKhuyenMai> getListKhachHangKhuyenMai();
-
-    List<NSXKhuyenMai> getListNSXKhuyenMai();
-
     List<SanPhamChiTiet> findByTenSanPham(String tenSanPham);
 
     List<Bia> getListBia();
@@ -57,7 +53,7 @@ public interface ServiceDotKhuyenMai {
 
     boolean deleteBiaKM(String tenSanPham, String maDotKhuyenMai);
 
-    boolean updateTTBiaKM(SanPhamChiTiet sp, DotKhuyenMai km);
+    boolean updateTTBiaKM();
 
     boolean updateGiaConLaiBiaKM(BiaKhuyenMai biaKhuyenMai, BigDecimal giaConLai);
 

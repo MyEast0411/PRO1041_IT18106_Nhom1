@@ -4,6 +4,7 @@
  */
 package view;
 
+import com.github.sarxos.webcam.Webcam;
 import domainModel.HoaDon;
 import domainModel.HoaDonChiTiet;
 import domainModel.KhachHang;
@@ -40,6 +41,15 @@ import utilities.ExportFilePdf;
 import views.viewHoaDonCho;
 import views.viewLichSu;
 import views.viewLogin;
+import com.google.zxing.MultiFormatReader;
+import javax.swing.JFrame;
+import com.github.sarxos.webcam.WebcamPanel;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -228,7 +238,7 @@ public class viewBanHang extends javax.swing.JPanel {
         txtTenSP = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
         txtTimKiem = new javax.swing.JTextField();
-        btnScanQR = new swing.ButtonCustom();
+        btnScanLineCode = new swing.ButtonCustom();
         btnTimKiem = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         txtLoaiSP = new javax.swing.JTextField();
@@ -610,10 +620,15 @@ public class viewBanHang extends javax.swing.JPanel {
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Tìm kiếm"));
 
-        btnScanQR.setBackground(new java.awt.Color(0, 204, 204));
-        btnScanQR.setForeground(new java.awt.Color(255, 255, 255));
-        btnScanQR.setText("Scan QR");
-        btnScanQR.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        btnScanLineCode.setBackground(new java.awt.Color(0, 204, 204));
+        btnScanLineCode.setForeground(new java.awt.Color(255, 255, 255));
+        btnScanLineCode.setText("Scan Barcode");
+        btnScanLineCode.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        btnScanLineCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnScanLineCodeActionPerformed(evt);
+            }
+        });
 
         btnTimKiem.setBackground(new java.awt.Color(0, 0, 0));
         btnTimKiem.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -636,8 +651,7 @@ public class viewBanHang extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnScanQR, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(btnScanLineCode, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -647,7 +661,7 @@ public class viewBanHang extends javax.swing.JPanel {
                     .addComponent(btnTimKiem)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnScanQR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnScanLineCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1276,11 +1290,63 @@ public class viewBanHang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jPanel1MouseClicked
 
+    private void btnScanLineCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnScanLineCodeActionPerformed
+        // TODO add your handling code here:
+        Webcam webcam = Webcam.getDefault();
+        if (webcam == null) {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy Webcam", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Tạo đối tượng của lớp Scanner để quét mã LineCode
+        MultiFormatReader reader = new MultiFormatReader();
+
+        // Tạo đối tượng JFrame cho camera
+        JFrame frame = new JFrame("Scan LineCode");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(500, 400);
+
+        // Tạo đối tượng của lớp WebcamPanel để hiển thị camera
+        WebcamPanel panel = new WebcamPanel(webcam);
+        panel.setFPSDisplayed(true);
+        panel.setDisplayDebugInfo(true);
+        panel.setImageSizeDisplayed(true);
+        panel.setMirrored(true);
+
+        // Thêm WebcamPanel vào JFrame
+        frame.add(panel);
+
+        // Hiển thị JFrame
+        frame.setVisible(true);
+        while (true) {
+            // Đọc hình ảnh từ Webcam
+            BufferedImage image = panel.getImage();
+
+            // Quét mã QR từ hình ảnh
+            Result result = null;
+            try {
+                result = reader.decode(new BinaryBitmap(new HybridBinarizer(
+                        new BufferedImageLuminanceSource(image))));
+            } catch (NotFoundException ex) {
+                // Không tìm thấy mã QR
+            }
+
+            // Nếu quét thành công, hiển thị thông tin mã LineCode lên MessageBox
+            if (result != null) {
+                String qrCode = result.getText();
+                JOptionPane.showMessageDialog(this, qrCode, "QR Code Result", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
+        }
+        // Đóng JFrame
+        frame.dispose();
+    }//GEN-LAST:event_btnScanLineCodeActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private swing.ButtonCustom btnHDCho;
     private swing.ButtonCustom btnLichSu;
-    private swing.ButtonCustom btnScanQR;
+    private swing.ButtonCustom btnScanLineCode;
     private swing.ButtonCustom btnTaoHD;
     private swing.ButtonCustom btnThanhToan;
     private swing.ButtonCustom btnThemVaoHD;

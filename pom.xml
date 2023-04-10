@@ -132,18 +132,38 @@
             <artifactId>jboss-logging</artifactId>
             <version>3.5.0.Final</version>
         </dependency>
-        
+      
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.1</version>
             <type>jar</type>
         </dependency>
+<<<<<<< HEAD
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>2.0.1</version>
         </dependency>
+=======
+        
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.sarxos</groupId>
+            <artifactId>webcam-capture</artifactId>
+            <version>0.3.12</version>
+        </dependency>
+
+>>>>>>> 4d808b415488ea69e4ef61b470e837e1f14cf349
     </dependencies>
     <name>PRO1041_IT18016_Nhom1</name>
 </project>

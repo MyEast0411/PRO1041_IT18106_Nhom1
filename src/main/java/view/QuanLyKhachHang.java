@@ -5,21 +5,20 @@
 package view;
 
 import domainModel.KhachHang;
-import domainModel.SanPhamChiTiet;
 import java.awt.Desktop;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import repositories.KhachHangRepository;
-import service.ServiceKhachHang;
 import service.impl.ServiceKhachHangImpl;
 import utilities.Ex_Im_ExcelKH;
-import static utilities.ExportFilePdf.path;
-import viewmodel.HoaDonViewModel;
+import viewmodel.KhachHangView;
+
 
 public class QuanLyKhachHang extends javax.swing.JPanel {
 
@@ -35,7 +34,7 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
         khachHangModel = new DefaultTableModel();
         serviceKhachHangImpl = new ServiceKhachHangImpl();
         hD_KH_Model = new DefaultTableModel();
-        loadTable(serviceKhachHangImpl.getAll());
+        loadTable(serviceKhachHangImpl.getLoad());
     }
 
     public void showForm(String ma, String hoTen, String diaChi, String SDT, String gioiTinh) {
@@ -53,15 +52,13 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
         }
     }
 
-    public void loadTable(List<KhachHang> list) {
+    public void loadTable(List<KhachHangView> list) {
         khachHangModel = (DefaultTableModel) tblKhachHang.getModel();
         khachHangModel.setRowCount(0);
-        for (KhachHang s : list) {
-            khachHangModel.addRow(new Object[]{
-                s.getMa(), s.getHoTen(), s.getDiaChi(),
-                s.getGioiTinh() == 0 ? "Nữ" : "Nam",
-                s.getSdt(), s.getTichDiem()
-            });
+        int index = 0;
+        for (KhachHangView s : list) {
+            index++;
+            khachHangModel.addRow(s.getDataRow(index));
         }
     }
 
@@ -326,7 +323,12 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
             }
         });
 
-        cbbTinhTien.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Sort By Money", "Sort By Create Day" }));
+        cbbTinhTien.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp xếp tiền giảm", "Sắp xếp tiền tăng" }));
+        cbbTinhTien.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbbTinhTienItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -367,11 +369,11 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Mã KH", "Họ tên", "Địa chỉ", "Giới tính", "SĐT", "Ngay Tao", "Tong Tien Da Mua"
+                "STT", "Mã KH", "Họ tên", "Địa chỉ", "Giới tính", "SĐT", "Tổng Tiền Đã Mua"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, true
+                true, false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -434,7 +436,7 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
             boolean kq = serviceKhachHangImpl.update(ma, kh);
             if (kq) {
                 JOptionPane.showMessageDialog(this, "Update successfull !!");
-                loadTable(serviceKhachHangImpl.getAll());
+                loadTable(serviceKhachHangImpl.getLoad());
             } else {
                 JOptionPane.showMessageDialog(this, "Update fail !!!");
             }
@@ -459,7 +461,7 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
             boolean kq = serviceKhachHangImpl.save(kh);
             if (kq) {
                 JOptionPane.showMessageDialog(this, "Add successfull !!");
-                loadTable(serviceKhachHangImpl.getAll());
+                loadTable(serviceKhachHangImpl.getLoad());
             } else {
                 JOptionPane.showMessageDialog(this, "Add fail !! ");
             }
@@ -497,19 +499,23 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
         // TODO add your handling code here:
         List<KhachHang> list = serviceKhachHangImpl.importExcel();
 
-        if (list.isEmpty()) {
-            loadTable(serviceKhachHangImpl.getAll());
-        } else {
+        if (!list.isEmpty()) {
             new KhachHangRepository().insertAll(list);
-            loadTable(serviceKhachHangImpl.getAll());
         }
+            loadTable(serviceKhachHangImpl.getLoad());
+        
     }//GEN-LAST:event_btnNhapDSActionPerformed
 
     private void txtTimKiemCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtTimKiemCaretUpdate
         // TODO add your handling code here:
-        List<KhachHang> listSDT = new ArrayList<>();
-        listSDT.add(serviceKhachHangImpl.getBySDT(txtTimKiem.getText()));
-        loadTable(listSDT);
+         List<KhachHangView> listSDT = new ArrayList<>();
+        if (txtTimKiem.getText().trim().length() == 0) {
+            listSDT = serviceKhachHangImpl.getLoad();
+        }else{
+            listSDT = serviceKhachHangImpl.getKHBySDT(txtTimKiem.getText());
+        }
+        
+       loadTable(listSDT);
     }//GEN-LAST:event_txtTimKiemCaretUpdate
 
     private void tblKhachHangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblKhachHangMouseClicked
@@ -526,6 +532,18 @@ public class QuanLyKhachHang extends javax.swing.JPanel {
                 tblKhachHang.getValueAt(row, 3).toString()
         );
     }//GEN-LAST:event_tblKhachHangMouseClicked
+
+    private void cbbTinhTienItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbTinhTienItemStateChanged
+        // TODO add your handling code here:
+        List<KhachHangView> kh = new ArrayList<>();
+        if (cbbTinhTien.getSelectedItem().equals("Sắp xếp tiền giảm")) {
+            kh = serviceKhachHangImpl.getLoadCBB();
+             
+        }else{
+           kh = serviceKhachHangImpl.getLoad();
+        }
+        loadTable(kh);
+    }//GEN-LAST:event_cbbTinhTienItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
