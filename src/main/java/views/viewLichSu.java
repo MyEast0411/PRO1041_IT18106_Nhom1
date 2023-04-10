@@ -8,15 +8,21 @@ import application.Main;
 import domainModel.HoaDon;
 import domainModel.HoaDonChiTiet;
 import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import service.ServiceHoaDon;
 import service.ServiceHoaDonChiTiet;
 import service.impl.ServiceHoaDonChiTietImpl;
 import service.impl.ServiceHoaDonImpl;
 import swing.ThongBao;
+import utilities.ExportFilePdf;
 import view.viewBanHang;
 
 /**
@@ -96,10 +102,10 @@ public class viewLichSu extends javax.swing.JFrame {
         x.dtm.setRowCount(0);
         BigDecimal donGia = new BigDecimal(0);
         for (HoaDonChiTiet hdct : ssHDCT.getListByMaHD(hd.getMa())) {
-            if(hdct.getIdChiTietSanPham().getTrangThai() == 0){
+            if (hdct.getIdChiTietSanPham().getTrangThai() == 0) {
                 donGia = hdct.getDonGia();
-            }else {
-                donGia = hdct.getDonGia().multiply(new BigDecimal(24));
+            } else {
+                donGia = hdct.getDonGia().multiply(new BigDecimal(24).multiply(new BigDecimal(0.9)));
             }
             x.dtm.addRow(new Object[]{
                 soThuTu++, hdct.getIdChiTietSanPham().getMa(), hdct.getIdChiTietSanPham().getBia().getTen(), hdct.getIdChiTietSanPham().getLoaiSP().getTen(),
@@ -140,6 +146,7 @@ public class viewLichSu extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         rdoDaTT = new javax.swing.JRadioButton();
         rdoDaHuy = new javax.swing.JRadioButton();
+        btnInHoaDon = new swing.ButtonCustom();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -202,6 +209,16 @@ public class viewLichSu extends javax.swing.JFrame {
             }
         });
 
+        btnInHoaDon.setBackground(new java.awt.Color(255, 0, 0));
+        btnInHoaDon.setForeground(new java.awt.Color(255, 255, 255));
+        btnInHoaDon.setText("In Hóa Đơn");
+        btnInHoaDon.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        btnInHoaDon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInHoaDonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -211,6 +228,8 @@ public class viewLichSu extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnInHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnXacNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,7 +254,9 @@ public class viewLichSu extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnXacNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnXacNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnInHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -289,6 +310,7 @@ public class viewLichSu extends javax.swing.JFrame {
 
     private void rdoDaTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoDaTTActionPerformed
         // TODO add your handling code here:
+        btnInHoaDon.setEnabled(true);
         dtm = (DefaultTableModel) this.tblHoaDon.getModel();
         dtm.setRowCount(0);
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -308,6 +330,7 @@ public class viewLichSu extends javax.swing.JFrame {
 
     private void rdoDaHuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoDaHuyActionPerformed
         // TODO add your handling code here:
+        btnInHoaDon.setEnabled(false);
         dtm = (DefaultTableModel) this.tblHoaDon.getModel();
         dtm.setRowCount(0);
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -324,6 +347,23 @@ public class viewLichSu extends javax.swing.JFrame {
             });
         }
     }//GEN-LAST:event_rdoDaHuyActionPerformed
+
+    private void btnInHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInHoaDonActionPerformed
+        // TODO add your handling code here:
+        int row = this.tblHoaDon.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Bạn chưa chọn hóa đơn");
+            return;
+        }
+        String maHD = this.tblHoaDon.getValueAt(row, 1).toString();
+        HoaDon hoaDon = ss.getHoaDonByMa(maHD);
+        ExportFilePdf.exportBill(hoaDon);
+        File file = new File(ExportFilePdf.path);
+        try {
+            Desktop.getDesktop().open(file);
+        } catch (IOException ex) {
+        }
+    }//GEN-LAST:event_btnInHoaDonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -362,6 +402,7 @@ public class viewLichSu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private swing.ButtonCustom btnInHoaDon;
     private swing.ButtonCustom btnXacNhan;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;

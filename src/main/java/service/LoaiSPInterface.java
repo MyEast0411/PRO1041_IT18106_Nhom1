@@ -21,4 +21,5 @@ public interface LoaiSPInterface {
 
     public Boolean deleteLSP(String ma);
     public ArrayList<LoaiSanPham_> TimKiemTheoTenSP(String tenSP);
+    ArrayList<LoaiSanPham_> getLoaiSP(String text);
 }

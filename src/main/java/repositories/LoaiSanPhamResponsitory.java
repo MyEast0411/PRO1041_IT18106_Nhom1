@@ -39,6 +39,30 @@ public class LoaiSanPhamResponsitory {
         }
         return null;
     }
+    public ArrayList<LoaiSanPham_> getLoaiSP(String text) {
+        String sql = "select * from loai_san_pham where ten like ?";
+        ArrayList<LoaiSanPham_> listLSP = new ArrayList<>();
+        try {
+            Connection c = JDBCUtils.getConnection();
+            PreparedStatement ps = c.prepareStatement(sql);
+            ps.setString(1, "%"+text+"%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                LoaiSanPham_ l = new LoaiSanPham_();
+                l.setId(rs.getString(1));
+                l.setMa(rs.getString(2));
+                l.setTen(rs.getString(3));
+                listLSP.add(l);
+            }
+            c.close();
+            ps.close();
+            rs.close();
+            return listLSP;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public Boolean addLSP(LoaiSanPham_ lsp) {
         String sql = "insert into loai_san_pham(id,ma,ten) values(newID(),?,?)";

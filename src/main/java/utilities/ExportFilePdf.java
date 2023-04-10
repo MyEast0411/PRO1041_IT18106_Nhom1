@@ -14,16 +14,24 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
+import domainModel.BiaKhuyenMai;
+import domainModel.DotKhuyenMai;
 import domainModel.HoaDon;
 import domainModel.HoaDonChiTiet;
+import domainModel.SanPhamChiTiet;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import repositories.SPCTRepo;
+import service.ServiceDotKhuyenMai;
 import service.ServiceHoaDon;
 import service.ServiceHoaDonChiTiet;
+import service.impl.ServiceDotKhuyenMaiImpl;
 import service.impl.ServiceHoaDonChiTietImpl;
 import service.impl.ServiceHoaDonImpl;
 
@@ -39,11 +47,13 @@ public class ExportFilePdf {
     public static void exportBill(HoaDon hd) {
         ServiceHoaDon ss = new ServiceHoaDonImpl();
         ServiceHoaDonChiTiet ssHDCT = new ServiceHoaDonChiTietImpl();
+        ServiceDotKhuyenMai ssDKM = new ServiceDotKhuyenMaiImpl();
+        SPCTRepo ssSPCT = new SPCTRepo();
         DecimalFormat df = new DecimalFormat("#,###");
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             String date = sdf.format(new Date());
-            path = hd.getMa().toLowerCase() + date +".pdf";
+            path = hd.getMa().toLowerCase() + date + ".pdf";
             PdfWriter pdfWriter = new PdfWriter(path);
             PdfDocument pdfDocument = new PdfDocument(pdfWriter);
             Document document = new Document(pdfDocument);
@@ -75,11 +85,11 @@ public class ExportFilePdf {
                     .add("Thông tin khách hàng").setBold().setBorder(Border.NO_BORDER));
 
             customerInforTable.addCell(new Cell().add("Họ tên:").setBorder(Border.NO_BORDER));
-            customerInforTable.addCell(new Cell().add(hd.getKhachHang()==null?"Không có thông tin":hd.getKhachHang().getHoTen()).setBorder(Border.NO_BORDER));
+            customerInforTable.addCell(new Cell().add(hd.getKhachHang() == null ? "Không có thông tin" : hd.getKhachHang().getHoTen()).setBorder(Border.NO_BORDER));
             customerInforTable.addCell(new Cell().add("Số điện thoại:").setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT));
-            customerInforTable.addCell(new Cell().add(hd.getKhachHang()==null?"Không có thông tin":hd.getKhachHang().getSdt()).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT));
+            customerInforTable.addCell(new Cell().add(hd.getKhachHang() == null ? "Không có thông tin" : hd.getKhachHang().getSdt()).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT));
             customerInforTable.addCell(new Cell().add("Địa chỉ:").setBorder(Border.NO_BORDER));
-            customerInforTable.addCell(new Cell().add(hd.getKhachHang()==null?"Không có thông tin":hd.getKhachHang().getDiaChi()).setBorder(Border.NO_BORDER));
+            customerInforTable.addCell(new Cell().add(hd.getKhachHang() == null ? "Không có thông tin" : hd.getKhachHang().getDiaChi()).setBorder(Border.NO_BORDER));
             customerInforTable.addCell(new Cell().add("Ngày thanh toán:").setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT));
             customerInforTable.addCell(new Cell().add(hd.getNgayThanhToan().getHours() + ":" + hd.getNgayThanhToan().getMinutes()
                     + "  " + sdf.format(hd.getNgayThanhToan())).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT));
@@ -94,13 +104,31 @@ public class ExportFilePdf {
             itemTable.addCell(new Cell().add("Giá bán").setBackgroundColor(new DeviceRgb(63, 169, 219)).setFontColor(Color.WHITE));
             itemTable.addCell(new Cell().add("Thành tiền").setBackgroundColor(new DeviceRgb(63, 169, 219)).setFontColor(Color.WHITE));
             int stt = 1;
+            BigDecimal donGia = new BigDecimal(0);
             for (HoaDonChiTiet x : ssHDCT.getListByMaHD(hd.getMa())) {
-                itemTable.addCell(new Cell().add((stt++)+""));
+                SanPhamChiTiet spct = ssSPCT.findByMa(x.getIdChiTietSanPham().getMa());
+                BiaKhuyenMai biaKM = new BiaKhuyenMai();
+                List<DotKhuyenMai> km = ssDKM.getDKMByDate(new Date());
+                for (DotKhuyenMai dotKhuyenMai : km) {
+                    System.out.println(dotKhuyenMai.getId());
+                    if (ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai) != null) {
+                        biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                        System.out.println(biaKM.getGiaConLai());
+                        spct.setGiaBan(biaKM.getGiaConLai());
+                    }
+                }
+                if (x.getIdChiTietSanPham().getTrangThai() == 0) {
+                    donGia = x.getDonGia();
+                } else {
+                    donGia = x.getDonGia().multiply(new BigDecimal(24).multiply(new BigDecimal(0.9)));
+                }
+                itemTable.addCell(new Cell().add((stt++) + ""));
                 itemTable.addCell(new Cell().add(x.getIdChiTietSanPham().getBia().getTen()));
                 itemTable.addCell(new Cell().add(x.getIdChiTietSanPham().getLoaiSP().getTen()));
-                itemTable.addCell(new Cell().add(x.getSoLuong() + " " + (x.getIdChiTietSanPham().getTrangThai()==0?"Lon":"Thùng")));
-                itemTable.addCell(new Cell().add(df.format(x.getIdChiTietSanPham().getGiaBan())+""));
-                itemTable.addCell(new Cell().add(df.format(x.getDonGia())+""));
+                itemTable.addCell(new Cell().add(x.getSoLuong() + " " + (x.getIdChiTietSanPham().getTrangThai() == 0 ? "Lon" : "Thùng")));
+                itemTable.addCell(new Cell().add(df.format(spct.getGiaBan()) + ""));
+                itemTable.addCell(new Cell().add(df.format(donGia) + ""));
+                //itemTable.addCell(new Cell().add(df.format(x.getDonGia().multiply(BigDecimal.valueOf(spct.getSoLuongLonBia()))) + ""));
             }
 
             itemTable.addCell(new Cell().add("").setBackgroundColor(new DeviceRgb(63, 169, 219)).setBorder(Border.NO_BORDER));

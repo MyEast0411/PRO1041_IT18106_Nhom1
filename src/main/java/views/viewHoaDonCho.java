@@ -62,7 +62,7 @@ public class viewHoaDonCho extends javax.swing.JFrame {
             if(hdct.getIdChiTietSanPham().getTrangThai() == 0){
                 donGia = hdct.getDonGia();
             }else {
-                donGia = hdct.getDonGia().multiply(new BigDecimal(24));
+                donGia = hdct.getDonGia().multiply(new BigDecimal(24).multiply(new BigDecimal(0.9)));
             }
             x.dtm.addRow(new Object[]{
                 soThuTu++, hdct.getIdChiTietSanPham().getMa(), hdct.getIdChiTietSanPham().getBia().getTen(), hdct.getIdChiTietSanPham().getLoaiSP().getTen(),

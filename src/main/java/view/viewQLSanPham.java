@@ -57,6 +57,16 @@ public class viewQLSanPham extends javax.swing.JPanel {
         loadCbbLoaiSP();
         loadCbbNSX();
         loadTable(spctSer.getAllSPCTBiaNsxLoaiSp());
+        
+        String text = this.cbbBia.getSelectedItem().toString();
+        DefaultComboBoxModel modelCombo = new DefaultComboBoxModel();
+
+        ArrayList<LoaiSanPham_> liB = loaiSPSer.getLoaiSP(text);
+
+        for (LoaiSanPham_ loaiSanPham_ : liB) {
+            modelCombo.addElement(loaiSanPham_);
+        }
+        this.cbbLoaiSP.setModel(modelCombo);
     }
 
     public void loadCbbBia() {
@@ -189,7 +199,6 @@ public class viewQLSanPham extends javax.swing.JPanel {
         btnSua = new swing.ButtonCustom();
         btnClear = new swing.ButtonCustom();
         btnTach = new swing.ButtonCustom();
-        jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblQLSanPham = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
@@ -274,28 +283,16 @@ public class viewQLSanPham extends javax.swing.JPanel {
             }
         });
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnTach, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addComponent(jButton1)))
+                    .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTach, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(16, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
@@ -315,9 +312,7 @@ public class viewQLSanPham extends javax.swing.JPanel {
                 .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnTach, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(jButton1)
-                .addGap(65, 65, 65))
+                .addGap(122, 122, 122))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(108, 108, 108)
@@ -453,6 +448,12 @@ public class viewQLSanPham extends javax.swing.JPanel {
 
         jLabel23.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jLabel23.setText("VND");
+
+        cbbBia.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbbBiaItemStateChanged(evt);
+            }
+        });
 
         jLabel24.setFont(new java.awt.Font("Nunito", 1, 14)); // NOI18N
         jLabel24.setText("Mã SPCT");
@@ -627,11 +628,11 @@ public class viewQLSanPham extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel24)
+                        .addComponent(txtMaSPCT, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel17)
-                        .addComponent(rdoDangBan)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel24)
-                            .addComponent(txtMaSPCT, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(rdoDangBan))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(rdoDaBan)
                         .addComponent(rdoSPLoi)))
@@ -1013,17 +1014,18 @@ public class viewQLSanPham extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMaSPCTActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void cbbBiaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbBiaItemStateChanged
         // TODO add your handling code here:
-        SanPhamChiTiet_ x = new SanPhamChiTiet_();
-        try {
-            x = this.getDataForm();
-        } catch (ParseException ex) {
-            Logger.getLogger(viewQLSanPham.class.getName()).log(Level.SEVERE, null, ex);
+        String text = this.cbbBia.getSelectedItem().toString();
+        DefaultComboBoxModel modelCombo = new DefaultComboBoxModel();
+
+        ArrayList<LoaiSanPham_> liB = loaiSPSer.getLoaiSP(text);
+
+        for (LoaiSanPham_ loaiSanPham_ : liB) {
+            modelCombo.addElement(loaiSanPham_);
         }
-        System.out.println("tình trạng" + x.getTinhTrang());
-        System.out.println("trạng thái " + x.getTrangThai());
-    }//GEN-LAST:event_jButton1ActionPerformed
+        this.cbbLoaiSP.setModel(modelCombo);
+    }//GEN-LAST:event_cbbBiaItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1037,7 +1039,6 @@ public class viewQLSanPham extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> cbbBia;
     private javax.swing.JComboBox<String> cbbLoaiSP;
     private javax.swing.JComboBox<String> cbbNSX;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
