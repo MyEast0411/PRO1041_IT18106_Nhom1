@@ -280,7 +280,7 @@ public class DotKhuyenMaiRepository {
             query.setParameter("km", km);
             List<BiaKhuyenMai> biaKMList = query.list();
             if (!biaKMList.isEmpty()) {
-                 JOptionPane.showMessageDialog(null, "Một đợt khuyến mại không thể áp dụng hai lần cho cùng một sản phẩm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Một đợt khuyến mại không thể áp dụng hai lần cho cùng một sản phẩm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return false;
             }
             // Apply the promotion to the product
@@ -391,4 +391,20 @@ public class DotKhuyenMaiRepository {
         }
         return null;
     }
+
+    public SanPhamChiTiet findByMa(String maSP) {
+        try ( Session s = HibernateUtil.getSession()) {
+            String hql = "FROM SanPhamChiTiet WHERE ma = :maSP";
+            Query q = s.createQuery(hql);
+            q.setParameter("maSP", maSP);
+            SanPhamChiTiet spct = (SanPhamChiTiet) q.uniqueResult();
+            System.out.println(spct);
+            return spct;
+        } catch (Exception e) {
+            System.out.println("Error in findByMa: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

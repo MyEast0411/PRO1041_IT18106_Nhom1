@@ -44,12 +44,18 @@ import views.viewLogin;
 import com.google.zxing.MultiFormatReader;
 import javax.swing.JFrame;
 import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import service.ServiceDotKhuyenMai;
+import service.impl.ServiceDotKhuyenMaiImpl;
 
 /**
  *
@@ -60,6 +66,7 @@ public class viewBanHang extends javax.swing.JPanel {
     /**
      * Creates new form viewBanHang
      */
+    private ServiceDotKhuyenMai serviceDKM = new ServiceDotKhuyenMaiImpl();
     private ServiceHoaDon ssHD = new ServiceHoaDonImpl();
     private ServiceHoaDonChiTiet ssHDCT = new ServiceHoaDonChiTietImpl();
     // private ServiceSanPhamChiTiet ssSPCT = new ServiceSanPhamChiTietImpl();
@@ -1286,57 +1293,27 @@ public class viewBanHang extends javax.swing.JPanel {
             return;
         }
     }//GEN-LAST:event_jPanel1MouseClicked
-
     private void btnScanLineCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnScanLineCodeActionPerformed
         // TODO add your handling code here:
-        Webcam webcam = Webcam.getDefault();
-        if (webcam == null) {
-            JOptionPane.showMessageDialog(null, "Không tìm thấy Webcam", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        ScanQRCode qrCodeScanner = new ScanQRCode();
+        qrCodeScanner.setVisible(true);
+        
+        String maSP = qrCodeScanner.getText();
+
+        System.out.println("Print o view-maSP: " + maSP);
+        SanPhamChiTiet spct = serviceDKM.findByMa(maSP);
+        if (spct == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy mã sản phẩm này");
             return;
         }
 
-        // Tạo đối tượng của lớp Scanner để quét mã LineCode
-        MultiFormatReader reader = new MultiFormatReader();
-
-        // Tạo đối tượng JFrame cho camera
-        JFrame frame = new JFrame("Scan LineCode");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(500, 400);
-
-        // Tạo đối tượng của lớp WebcamPanel để hiển thị camera
-        WebcamPanel panel = new WebcamPanel(webcam);
-        panel.setFPSDisplayed(true);
-        panel.setDisplayDebugInfo(true);
-        panel.setImageSizeDisplayed(true);
-        panel.setMirrored(true);
-
-        // Thêm WebcamPanel vào JFrame
-        frame.add(panel);
-
-        // Hiển thị JFrame
-        frame.setVisible(true);
-        while (true) {
-            // Đọc hình ảnh từ Webcam
-            BufferedImage image = panel.getImage();
-
-            // Quét mã QR từ hình ảnh
-            Result result = null;
-            try {
-                result = reader.decode(new BinaryBitmap(new HybridBinarizer(
-                        new BufferedImageLuminanceSource(image))));
-            } catch (NotFoundException ex) {
-                // Không tìm thấy mã QR
-            }
-
-            // Nếu quét thành công, hiển thị thông tin mã LineCode lên MessageBox
-            if (result != null) {
-                String qrCode = result.getText();
-                JOptionPane.showMessageDialog(this, qrCode, "QR Code Result", JOptionPane.INFORMATION_MESSAGE);
-                break;
-            }
-        }
-        // Đóng JFrame
-        frame.dispose();
+        this.txtMa.setText(spct.getMa());
+        this.txtTenSP.setText(spct.getBia().getTen());
+        this.txtLoaiSP.setText(spct.getLoaiSP().getTen());
+        this.txtTheTich.setText(spct.getTheTich());
+        this.txtTrangThai.setText(spct.getTrangThai() == 1 ? "Thùng" : "Lon");
+        this.txtNongDo.setText(spct.getNongDoCon());
+        this.txtGiaBan.setText(df.format(spct.getGiaBan()) + "");
     }//GEN-LAST:event_btnScanLineCodeActionPerformed
 
 

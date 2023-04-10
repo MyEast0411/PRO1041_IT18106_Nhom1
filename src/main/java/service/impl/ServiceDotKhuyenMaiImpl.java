@@ -115,5 +115,11 @@ public class ServiceDotKhuyenMaiImpl implements ServiceDotKhuyenMai {
         return DKMRepo.updateGiaConLaiBiaKM(biaKhuyenMai, giaConLai);
     }
 
+    @Override
+    public SanPhamChiTiet findByMa(String maSP) {
+        return DKMRepo.findByMa(maSP);
+    }
+
+  
 
 }

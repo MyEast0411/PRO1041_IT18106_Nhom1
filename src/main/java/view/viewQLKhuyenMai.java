@@ -1044,6 +1044,8 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         TableColumnModel tcm = tblSanPhamKM.getColumnModel();
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMinWidth(0);
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMaxWidth(0);
+        tcm.getColumn(tcm.getColumnIndex("Mã Bia")).setMinWidth(0);
+        tcm.getColumn(tcm.getColumnIndex("Mã Bia")).setMaxWidth(0);
         //set độ rộng cột
         tcm.getColumn(tcm.getColumnIndex("Đợt KM được áp dụng")).setMinWidth(140);
         tcm.getColumn(tcm.getColumnIndex("STT")).setMaxWidth(35);
@@ -1114,6 +1116,8 @@ public class viewQLKhuyenMai extends javax.swing.JPanel {
         TableColumnModel tcm = tblSanPhamKM.getColumnModel();
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMinWidth(0);
         tcm.getColumn(tcm.getColumnIndex("Mã ĐKM")).setMaxWidth(0);
+        tcm.getColumn(tcm.getColumnIndex("Mã Bia")).setMinWidth(0);
+        tcm.getColumn(tcm.getColumnIndex("Mã Bia")).setMaxWidth(0);
         //set độ rộng cột 
         tcm.getColumn(tcm.getColumnIndex("Đợt KM được áp dụng")).setMinWidth(140);
         tcm.getColumn(tcm.getColumnIndex("STT")).setMaxWidth(35);

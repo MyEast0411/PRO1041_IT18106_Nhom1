@@ -34,6 +34,8 @@ public interface ServiceDotKhuyenMai {
     List<Bia> getListBia();
 
     List<DotKhuyenMai> getListByTen(String tenDKM);
+    
+    SanPhamChiTiet findByMa(String maSP);
 
     DotKhuyenMai getDotKhuyenMaiByMaDKM(String maDKM);
 
