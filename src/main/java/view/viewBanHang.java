@@ -50,10 +50,16 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+<<<<<<< HEAD
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+=======
+import domainModel.BiaKhuyenMai;
+import domainModel.DotKhuyenMai;
+import java.awt.image.BufferedImage;
+>>>>>>> 6c0494633b591e5051084673d6ca73b74826d515
 import service.ServiceDotKhuyenMai;
 import service.impl.ServiceDotKhuyenMaiImpl;
 
@@ -69,6 +75,7 @@ public class viewBanHang extends javax.swing.JPanel {
     private ServiceDotKhuyenMai serviceDKM = new ServiceDotKhuyenMaiImpl();
     private ServiceHoaDon ssHD = new ServiceHoaDonImpl();
     private ServiceHoaDonChiTiet ssHDCT = new ServiceHoaDonChiTietImpl();
+    private ServiceDotKhuyenMai ssDKM = new ServiceDotKhuyenMaiImpl();
     // private ServiceSanPhamChiTiet ssSPCT = new ServiceSanPhamChiTietImpl();
     private SPCTRepo ssSPCT = new SPCTRepo();
     public DefaultTableModel dtm = new DefaultTableModel();
@@ -89,11 +96,17 @@ public class viewBanHang extends javax.swing.JPanel {
     public void loadTable(List<HoaDonChiTiet> list) {
         dtm = (DefaultTableModel) this.tblHoaDon.getModel();
         dtm.setRowCount(0);
+        BigDecimal donGia = new BigDecimal(0);
         for (HoaDonChiTiet x : list) {
+            if (x.getIdChiTietSanPham().getTrangThai() == 0) {
+                donGia = x.getDonGia();
+            } else {
+                donGia = x.getDonGia().multiply(new BigDecimal(24).multiply(new BigDecimal(0.9)));
+            }
             dtm.addRow(new Object[]{
                 stt++, x.getIdChiTietSanPham().getMa(), x.getIdChiTietSanPham().getBia().getTen(), x.getIdChiTietSanPham().getLoaiSP().getTen(),
                 x.getIdChiTietSanPham().getTheTich(), x.getIdChiTietSanPham().getNongDoCon(), x.getIdChiTietSanPham().getTrangThai() == 0 ? "Lon" : "Thùng",
-                x.getSoLuong(), df.format(x.getDonGia())
+                x.getSoLuong(), df.format(donGia)
             });
         }
     }
@@ -150,9 +163,14 @@ public class viewBanHang extends javax.swing.JPanel {
         if (lblMaHD.getText().trim().length() == 0) {
             return;
         }
-
+        BigDecimal donGia = new BigDecimal(0);
         for (HoaDonChiTiet x : ssHDCT.getListByMaHD(lblMaHD.getText())) {
-            tt = tt.add(x.getDonGia().multiply(BigDecimal.valueOf(x.getSoLuong())));
+            if (x.getIdChiTietSanPham().getTrangThai() == 0) {
+                donGia = x.getDonGia();
+            } else {
+                donGia = x.getDonGia().multiply(new BigDecimal(24).multiply(new BigDecimal(0.9)));
+            }
+            tt = tt.add(donGia);
         }
         this.lblTongTien.setText(df.format(tt) + " VNĐ");
     }
@@ -901,8 +919,18 @@ public class viewBanHang extends javax.swing.JPanel {
         if (txtTimKiem.getText().trim().length() == 0) {
             return;
         }
+        BiaKhuyenMai biaKM = new BiaKhuyenMai();
         String maSP = txtTimKiem.getText().trim();
         SanPhamChiTiet spct = ssSPCT.findByMa(maSP);
+        Date date = new Date();
+        List<DotKhuyenMai> km = ssDKM.getDKMByDate(date);
+
+        for (DotKhuyenMai dotKhuyenMai : km) {
+            if (ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai) != null) {
+                biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                spct.setGiaBan(biaKM.getGiaConLai());
+            }
+        }
         if (spct == null) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy mã sản phẩm này");
             return;
@@ -950,15 +978,33 @@ public class viewBanHang extends javax.swing.JPanel {
         SanPhamChiTiet spct = ssSPCT.findByMa(maSP);
         HoaDon hd = ssHD.getHoaDonByMa(maHD);
         HoaDonChiTiet hdct = new HoaDonChiTiet();
-        hdct.setSoLuong(soLuong);
-        hdct.setIdHoaDon(hd);
-        hdct.setIdChiTietSanPham(spct);
-        hdct.setDonGia(spct.getGiaBan().multiply(new BigDecimal(soLuong)));
-        if (btnThemVaoHD.getText().trim().equals("Cập nhật")) {
+        // số lượng < 24 
+        if (soLuong < 24) {
+            hdct = new HoaDonChiTiet();
+            hdct.setSoLuong(soLuong);
+            hdct.setIdHoaDon(hd);
+            hdct.setIdChiTietSanPham(spct);
+            hdct.setDonGia(spct.getGiaBan().multiply(new BigDecimal(soLuong)));
+            if (btnThemVaoHD.getText().trim().equals("Cập nhật")) {
+                stt = 1;
+                for (HoaDonChiTiet hoaDonChiTiet : ssHDCT.getListByMaHD(maHD)) {
+                    if (hoaDonChiTiet.getIdChiTietSanPham().getId().equals(hdct.getIdChiTietSanPham().getId())) {
+                        ssHDCT.update(hdct);
+                        JOptionPane.showMessageDialog(this, "Cập nhật thành công");
+                        this.loadTable(ssHDCT.getListByMaHD(maHD));
+                        this.btnThemVaoHD.setText("Thêm vào HĐ");
+                        this.loadTable(ssHDCT.getListByMaHD(maHD));
+                        this.clearSanPham();
+                        this.loadTongTien();
+                        return;
+                    }
+                }
+            }
             for (HoaDonChiTiet hoaDonChiTiet : ssHDCT.getListByMaHD(maHD)) {
                 if (hoaDonChiTiet.getIdChiTietSanPham().getId().equals(hdct.getIdChiTietSanPham().getId())) {
+                    hdct.setSoLuong(hdct.getSoLuong() + hoaDonChiTiet.getSoLuong());
                     ssHDCT.update(hdct);
-                    JOptionPane.showMessageDialog(this, "Cập nhật thành công");
+                    JOptionPane.showMessageDialog(this, "Thêm thành công");
                     this.loadTable(ssHDCT.getListByMaHD(maHD));
                     this.btnThemVaoHD.setText("Thêm vào HĐ");
                     this.loadTable(ssHDCT.getListByMaHD(maHD));
@@ -967,28 +1013,140 @@ public class viewBanHang extends javax.swing.JPanel {
                     return;
                 }
             }
-        }
-        for (HoaDonChiTiet hoaDonChiTiet : ssHDCT.getListByMaHD(maHD)) {
-            if (hoaDonChiTiet.getIdChiTietSanPham().getId().equals(hdct.getIdChiTietSanPham().getId())) {
-                hdct.setSoLuong(hdct.getSoLuong() + hoaDonChiTiet.getSoLuong());
-                ssHDCT.update(hdct);
+            if (ssHDCT.insert(hdct)) {
                 JOptionPane.showMessageDialog(this, "Thêm thành công");
-                this.loadTable(ssHDCT.getListByMaHD(maHD));
-                this.btnThemVaoHD.setText("Thêm vào HĐ");
-                this.loadTable(ssHDCT.getListByMaHD(maHD));
                 this.clearSanPham();
+                this.loadTable(ssHDCT.getListByMaHD(maHD));
                 this.loadTongTien();
-                return;
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại");
             }
         }
-        if (ssHDCT.insert(hdct)) {
-            JOptionPane.showMessageDialog(this, "Thêm thành công");
-            this.clearSanPham();
-            this.loadTable(ssHDCT.getListByMaHD(maHD));
-            this.loadTongTien();
-        } else {
-            JOptionPane.showMessageDialog(this, "Thêm thất bại");
+
+        //số lượng = 24
+        if (soLuong == 24) {
+            spct.setTrangThai(1);
+            soLuong = soLuong - 24;
+            BiaKhuyenMai biaKM = new BiaKhuyenMai();
+            Date date = new Date();
+            List<DotKhuyenMai> km = ssDKM.getDKMByDate(date);
+            for (DotKhuyenMai dotKhuyenMai : km) {
+                System.out.println(dotKhuyenMai.getId());
+                if (ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai) != null) {
+                    biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                    System.out.println(biaKM.getGiaConLai());
+                    spct.setGiaBan(biaKM.getGiaConLai());
+                }
+            }
+            hdct = new HoaDonChiTiet();
+            hdct.setSoLuong(soLuong == 0 ? 1 : soLuong);
+            hdct.setIdHoaDon(hd);
+            hdct.setIdChiTietSanPham(spct);
+            hdct.setDonGia(spct.getGiaBan().multiply(new BigDecimal(soLuong == 0 ? 1 : soLuong)));
+            if (btnThemVaoHD.getText().trim().equals("Cập nhật")) {
+                stt = 1;
+                for (HoaDonChiTiet hoaDonChiTiet : ssHDCT.getListByMaHD(maHD)) {
+                    if (hoaDonChiTiet.getIdChiTietSanPham().getId().equals(hdct.getIdChiTietSanPham().getId())) {
+                        ssHDCT.update(hdct);
+                        JOptionPane.showMessageDialog(this, "Cập nhật thành công");
+                        this.loadTable(ssHDCT.getListByMaHD(maHD));
+                        this.btnThemVaoHD.setText("Thêm vào HĐ");
+                        this.loadTable(ssHDCT.getListByMaHD(maHD));
+                        this.clearSanPham();
+                        this.loadTongTien();
+                        return;
+                    }
+                }
+            }
+            for (HoaDonChiTiet hoaDonChiTiet : ssHDCT.getListByMaHD(maHD)) {
+                if (hoaDonChiTiet.getIdChiTietSanPham().getId().equals(hdct.getIdChiTietSanPham().getId())) {
+                    hdct.setSoLuong(hdct.getSoLuong() + hoaDonChiTiet.getSoLuong());
+                    ssHDCT.update(hdct);
+                    JOptionPane.showMessageDialog(this, "Thêm thành công");
+                    this.loadTable(ssHDCT.getListByMaHD(maHD));
+                    this.btnThemVaoHD.setText("Thêm vào HĐ");
+                    this.loadTable(ssHDCT.getListByMaHD(maHD));
+                    this.clearSanPham();
+                    this.loadTongTien();
+                    return;
+                }
+            }
+            if (ssHDCT.insert(hdct)) {
+                JOptionPane.showMessageDialog(this, "Thêm thành công");
+                this.clearSanPham();
+                this.loadTable(ssHDCT.getListByMaHD(maHD));
+                this.loadTongTien();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại");
+            }
         }
+
+        // gộp thùng số lượng > 24
+        if (soLuong > 24) {
+            stt = 1;
+            int d = soLuong / 24; // chia lấy thùng
+            int d1 = soLuong % 24; // chia lấy dư
+
+            BiaKhuyenMai biaKM = new BiaKhuyenMai();
+            Date date = new Date();
+            List<DotKhuyenMai> km = ssDKM.getDKMByDate(date);
+            for (DotKhuyenMai dotKhuyenMai : km) {
+                System.out.println(dotKhuyenMai.getId());
+                if (ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai) != null) {
+                    biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                    System.out.println(biaKM.getGiaConLai());
+                    spct.setGiaBan(biaKM.getGiaConLai());
+                }
+            }
+
+            hdct = new HoaDonChiTiet();
+            hdct.setIdHoaDon(hd);
+            hdct.setIdChiTietSanPham(spct);
+            hdct.setSoLuong(d == 0 ? 1 : d);
+            hdct.setDonGia(spct.getGiaBan().multiply(new BigDecimal(d == 0 ? 1 : d)));
+            if (btnThemVaoHD.getText().trim().equals("Cập nhật")) {
+                stt = 1;
+                for (HoaDonChiTiet hoaDonChiTiet : ssHDCT.getListByMaHD(maHD)) {
+                    if (hoaDonChiTiet.getIdChiTietSanPham().getId().equals(hdct.getIdChiTietSanPham().getId())) {
+                        ssHDCT.update(hdct);
+                        JOptionPane.showMessageDialog(this, "Cập nhật thành công");
+                        this.loadTable(ssHDCT.getListByMaHD(maHD));
+                        this.btnThemVaoHD.setText("Thêm vào HĐ");
+                        this.loadTable(ssHDCT.getListByMaHD(maHD));
+                        this.clearSanPham();
+                        this.loadTongTien();
+                        return;
+                    }
+                }
+            }
+            if (ssHDCT.insert(hdct)) {
+                JOptionPane.showMessageDialog(this, "Thêm thành công");
+                this.clearSanPham();
+                this.loadTable(ssHDCT.getListByMaHD(maHD));
+                this.loadTongTien();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại");
+            }
+
+            System.out.println("gop thung");
+            if (d1 > 0) {
+                SanPhamChiTiet sanPhamCT = new SanPhamChiTiet();
+                HoaDonChiTiet hoaDonCT = new HoaDonChiTiet();
+                sanPhamCT = spct;
+                sanPhamCT.setMa(spct.getMa() + random());
+                sanPhamCT.setTrangThai(1);
+                sanPhamCT.setId(UUID.randomUUID());
+                sanPhamCT.setSoLuongTon(spct.getSoLuongTon());
+                sanPhamCT.setSoLuongLonBia(24);
+                ssSPCT.insert(sanPhamCT);
+                hoaDonCT.setIdChiTietSanPham(sanPhamCT);
+                hoaDonCT.setIdHoaDon(hd);
+                hoaDonCT.setSoLuong(d1);
+                hoaDonCT.setDonGia(spct.getGiaBan().multiply(new BigDecimal(d1 == 0 ? 1 : d1)));
+                ssHDCT.insert(hoaDonCT);
+            }
+        }
+        this.loadTable(ssHDCT.getListByMaHD(maHD));
     }//GEN-LAST:event_btnThemVaoHDActionPerformed
 
     private void tblHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHoaDonMouseClicked
@@ -1004,11 +1162,22 @@ public class viewBanHang extends javax.swing.JPanel {
         }
         String ma = this.tblHoaDon.getValueAt(row, 1).toString();
         SanPhamChiTiet spct = ssSPCT.findByMa(ma);
+        BiaKhuyenMai biaKM = new BiaKhuyenMai();
+        Date date = new Date();
+        List<DotKhuyenMai> km = ssDKM.getDKMByDate(date);
+        for (DotKhuyenMai dotKhuyenMai : km) {
+            System.out.println(dotKhuyenMai.getId());
+            if (ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai) != null) {
+                biaKM = ssDKM.getBiaKhuyenMai(spct, dotKhuyenMai);
+                System.out.println(biaKM.getGiaConLai());
+                spct.setGiaBan(biaKM.getGiaConLai());
+            }
+        }
         this.txtMa.setText(spct.getMa());
         this.txtTenSP.setText(spct.getBia().getTen());
         this.txtLoaiSP.setText(spct.getLoaiSP().getTen());
         this.txtTheTich.setText(spct.getTheTich());
-        this.txtTrangThai.setText(spct.getTrangThai() == 1 ? "Thùng" : "Lon");
+        this.txtTrangThai.setText(spct.getTrangThai() == 0 ? "Lon" : "Thùng");
         this.txtNongDo.setText(spct.getNongDoCon());
         this.txtGiaBan.setText(df.format(spct.getGiaBan()) + "");
         this.txtSoLuong.setText(tblHoaDon.getValueAt(row, 7).toString());
@@ -1270,15 +1439,18 @@ public class viewBanHang extends javax.swing.JPanel {
         if (text.equals("Tiền mặt")) {
             this.txtTienMat.setEnabled(true);
             this.txtChuyenKhoan.setEnabled(false);
+            this.txtTienThua.setText("");
             this.txtChuyenKhoan.setText("");
         } else if (text.equals("Chuyển khoản")) {
             this.txtTienMat.setEnabled(false);
             this.txtChuyenKhoan.setEnabled(true);
+            this.txtTienThua.setText("");
             this.txtTienMat.setText("");
         } else {
             this.txtChuyenKhoan.setEnabled(true);
             this.txtTienMat.setEnabled(true);
             this.txtTienMat.setText("");
+            this.txtTienThua.setText("");
             this.txtChuyenKhoan.setText("");
         }
 
@@ -1307,6 +1479,7 @@ public class viewBanHang extends javax.swing.JPanel {
             return;
         }
 
+<<<<<<< HEAD
         this.txtMa.setText(spct.getMa());
         this.txtTenSP.setText(spct.getBia().getTen());
         this.txtLoaiSP.setText(spct.getLoaiSP().getTen());
@@ -1314,6 +1487,51 @@ public class viewBanHang extends javax.swing.JPanel {
         this.txtTrangThai.setText(spct.getTrangThai() == 1 ? "Thùng" : "Lon");
         this.txtNongDo.setText(spct.getNongDoCon());
         this.txtGiaBan.setText(df.format(spct.getGiaBan()) + "");
+=======
+        // Tạo đối tượng của lớp Scanner để quét mã LineCode
+        MultiFormatReader reader = new MultiFormatReader();
+
+        // Tạo đối tượng JFrame cho camera
+        JFrame frame = new JFrame("Scan LineCode");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(500, 400);
+        frame.setLocationRelativeTo(null);
+        // Tạo đối tượng của lớp WebcamPanel để hiển thị camera
+        WebcamPanel panel = new WebcamPanel(webcam);
+        panel.setFPSDisplayed(true);
+        panel.setDisplayDebugInfo(true);
+        panel.setImageSizeDisplayed(true);
+        panel.setMirrored(true);
+
+        // Thêm WebcamPanel vào JFrame
+        frame.add(panel);
+
+        // Hiển thị JFrame
+        frame.setVisible(true);
+        while (true) {
+            // Đọc hình ảnh từ Webcam
+            BufferedImage image = panel.getImage();
+            System.out.println("hello");
+            // Quét mã QR từ hình ảnh
+            Result result = null;
+            try {
+                result = reader.decode(new BinaryBitmap(new HybridBinarizer(
+                        new BufferedImageLuminanceSource(image))));
+            } catch (NotFoundException ex) {
+                // Không tìm thấy mã QR
+            }
+
+            // Nếu quét thành công, hiển thị thông tin mã LineCode lên MessageBox
+            if (result != null) {
+                String qrCode = result.getText();
+                JOptionPane.showMessageDialog(this, qrCode, "QR Code Result", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
+
+        }
+        // Đóng JFrame
+        frame.dispose();
+>>>>>>> 6c0494633b591e5051084673d6ca73b74826d515
     }//GEN-LAST:event_btnScanLineCodeActionPerformed
 
 
@@ -1372,4 +1590,10 @@ public class viewBanHang extends javax.swing.JPanel {
     private javax.swing.JTextField txtTimKiem;
     private javax.swing.JTextField txtTrangThai;
     // End of variables declaration//GEN-END:variables
+
+    private String random() {
+        LocalDateTime time = LocalDateTime.now();
+        String text = time.getMinute() + "" + time.getSecond();
+        return text;
+    }
 }

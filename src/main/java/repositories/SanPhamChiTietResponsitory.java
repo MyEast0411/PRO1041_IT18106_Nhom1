@@ -168,7 +168,8 @@ public class SanPhamChiTietResponsitory {
     }
 
     public Boolean updateSPCT(SanPhamChiTiet_ spct) {
-        String sql = "update san_pham_chi_tiet set ma=?, gia_ban =? , gia_nhap=?,han_sd=?,ngay_sx =?, nong_do_con =?,so_luong_lon_bia=?,so_luong_ton=?, thanh_phan=?, the_tich=?, tinh_trang=?, trang_thai=?,xuat_xu =?,id_bia=?,id_loai_san_pham=?,id_nsx=? where id=?";
+        String sql = "update san_pham_chi_tiet set ma=?, gia_ban =? , gia_nhap=?,han_sd=?,ngay_sx =?, nong_do_con =?,so_luong_lon_bia=?,so_luong_ton=?, thanh_phan=?, the_tich=?,"
+                + " tinh_trang=?, trang_thai=?,xuat_xu =?,id_bia=?,id_loai_san_pham=?,id_nsx=? where id=?";
         try {
             Connection c = JDBCUtils.getConnection();
             PreparedStatement ps = c.prepareStatement(sql);

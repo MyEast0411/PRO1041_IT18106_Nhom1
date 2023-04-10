@@ -57,11 +57,17 @@ public class viewHoaDonCho extends javax.swing.JFrame {
         
         x.dtm = (DefaultTableModel) x.tblHoaDon.getModel();
         x.dtm.setRowCount(0);
+        BigDecimal donGia = new BigDecimal(0);
         for (HoaDonChiTiet hdct : ssHDCT.getListByMaHD(hd.getMa())) {
+            if(hdct.getIdChiTietSanPham().getTrangThai() == 0){
+                donGia = hdct.getDonGia();
+            }else {
+                donGia = hdct.getDonGia().multiply(new BigDecimal(24).multiply(new BigDecimal(0.9)));
+            }
             x.dtm.addRow(new Object[]{
                 soThuTu++, hdct.getIdChiTietSanPham().getMa(), hdct.getIdChiTietSanPham().getBia().getTen(), hdct.getIdChiTietSanPham().getLoaiSP().getTen(),
                 hdct.getIdChiTietSanPham().getTheTich(), hdct.getIdChiTietSanPham().getNongDoCon(), hdct.getIdChiTietSanPham().getTrangThai() == 0 ? "Lon" : "Thùng",
-                hdct.getSoLuong(), df.format(hdct.getDonGia())
+                hdct.getSoLuong(), df.format(donGia)
             });
         }
         x.loadTongTien();

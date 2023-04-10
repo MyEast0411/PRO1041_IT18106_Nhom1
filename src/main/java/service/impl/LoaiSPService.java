@@ -46,4 +46,11 @@ public class LoaiSPService implements LoaiSPInterface {
         return loaiRes.TimKiemTheoTenSP(tenSP);
     }
 
+    @Override
+    public ArrayList<LoaiSanPham_> getLoaiSP(String text) {
+        return loaiRes.getLoaiSP(text);
+    }
+    
+    
+
 }

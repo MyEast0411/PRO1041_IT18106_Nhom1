@@ -27,31 +27,34 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     }
     public boolean check = false;
     public Button cmd = new Button();
+    public Button cmd1 = new Button();
+
     public MyTextField txtEmail = new MyTextField();
     public MyPasswordField txtPass = new MyPasswordField();
+    public MyTextField txtUser = new MyTextField();
+    
     private void initRegister() {
         register.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
         JLabel label = new JLabel("Quên mật khẩu");
         label.setFont(new Font("sansserif", 1, 30));
         label.setForeground(new Color(7, 164, 121));
         register.add(label);
-        MyTextField txtUser = new MyTextField();
+        
         txtUser.setPrefixIcon(new ImageIcon(getClass().getResource("/com/raven/icon/user.png")));
-        txtUser.setHint("Mã");
+        txtUser.setHint("Tên đăng nhập");
         register.add(txtUser, "w 60%");
         MyTextField txtEmail = new MyTextField();
         txtEmail.setPrefixIcon(new ImageIcon(getClass().getResource("/com/raven/icon/mail.png")));
         txtEmail.setHint("Email");
 //        register.add(txtEmail, "w 60%");
-        MyPasswordField txtPass = new MyPasswordField();
-        txtPass.setPrefixIcon(new ImageIcon(getClass().getResource("/com/raven/icon/pass.png")));
-        txtPass.setHint("Password");
-        register.add(txtPass, "w 60%");
-        Button cmd = new Button();
-        cmd.setBackground(new Color(7, 164, 121));
-        cmd.setForeground(new Color(250, 250, 250));
-        cmd.setText("Quên mật khẩu");
-        register.add(cmd, "w 40%, h 40");
+//        MyPasswordField txtPass = new MyPasswordField();
+//        txtPass.setPrefixIcon(new ImageIcon(getClass().getResource("/com/raven/icon/pass.png")));
+//        txtPass.setHint("Password");
+//        register.add(txtPass, "w 60%");
+        cmd1.setBackground(new Color(7, 164, 121));
+        cmd1.setForeground(new Color(250, 250, 250));
+        cmd1.setText("Quên mật khẩu");
+        register.add(cmd1, "w 40%, h 40");
     }
 
     public void initLogin() {

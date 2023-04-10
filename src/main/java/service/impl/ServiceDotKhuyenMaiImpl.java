@@ -116,10 +116,22 @@ public class ServiceDotKhuyenMaiImpl implements ServiceDotKhuyenMai {
     }
 
     @Override
+<<<<<<< HEAD
     public SanPhamChiTiet findByMa(String maSP) {
         return DKMRepo.findByMa(maSP);
     }
 
   
+=======
+    public BiaKhuyenMai getBiaKhuyenMai(SanPhamChiTiet spct, DotKhuyenMai km) {
+        return DKMRepo.getBiaKhuyenMai(spct, km);
+    }
+
+    @Override
+    public List<DotKhuyenMai> getDKMByDate(Date date) {
+        return DKMRepo.getDKMByDate(date);
+    }
+
+>>>>>>> 6c0494633b591e5051084673d6ca73b74826d515
 
 }

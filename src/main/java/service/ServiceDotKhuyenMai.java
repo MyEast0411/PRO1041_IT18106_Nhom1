@@ -38,7 +38,11 @@ public interface ServiceDotKhuyenMai {
     SanPhamChiTiet findByMa(String maSP);
 
     DotKhuyenMai getDotKhuyenMaiByMaDKM(String maDKM);
-
+    
+    BiaKhuyenMai getBiaKhuyenMai(SanPhamChiTiet spct , DotKhuyenMai km);
+    
+    List<DotKhuyenMai> getDKMByDate(Date date);
+    
     boolean apDungKM(SanPhamChiTiet sp, DotKhuyenMai km);
 
     boolean checkBiaKhuyenMai(SanPhamChiTiet spct, DotKhuyenMai dotKM);

@@ -133,7 +133,7 @@ public class SPCTRepo {
     public SanPhamChiTiet findByMa(String ma){
        SanPhamChiTiet spct = new SanPhamChiTiet();
         try(Session ss = HibernateUtil.getSession()) {
-            Query query = ss.createQuery("From SanPhamChiTiet where ma = :ma");
+            Query query = ss.createQuery("From SanPhamChiTiet where ma = :ma and tinh_trang = 1");
             query.setParameter("ma", ma);
             spct = (SanPhamChiTiet) query.getSingleResult();
             return spct;
